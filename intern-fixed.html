@@ -1,0 +1,1666 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>实习生成长导航 v5</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --b50:#EBF3FF;--b100:#C2D9FF;--b500:#1664FF;--b600:#0F52D9;--b700:#0A3FAD;--b900:#031A54;
+  --g50:#F7F8FA;--g100:#EEF0F4;--g200:#DDE1E9;--g300:#C8CDD8;--g400:#9BA3B4;--g600:#5C6478;--g800:#1D2233;
+  --gr50:#EDFAF4;--gr100:#BBEDD3;--gr500:#00A854;--gr700:#007A3D;
+  --am50:#FFF8EC;--am100:#FFE0A0;--am500:#FF9500;--am700:#CC7000;
+  --r50:#FFF0EF;--r100:#FFBDBC;--r500:#FF4D4F;--r700:#CC2527;
+  --w:#fff;--sh:0 1px 3px rgba(0,0,0,.06);--sh2:0 4px 16px rgba(0,0,0,.1);--sh3:0 8px 32px rgba(0,0,0,.18);
+}
+html,body{height:100%;font-family:'PingFang SC','Helvetica Neue',Arial,sans-serif;background:var(--g50);color:var(--g800);font-size:14px;-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-thumb{background:var(--g200);border-radius:2px}
+
+/* LOGIN */
+#login-screen{position:fixed;inset:0;background:linear-gradient(135deg,#031A54,#1664FF,#0A3FAD);display:flex;align-items:center;justify-content:center;z-index:9999;padding:16px}
+.lc{background:var(--w);border-radius:20px;padding:36px 32px;width:100%;max-width:400px;box-shadow:var(--sh3)}
+.llogo{display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:22px}
+.lmark{width:38px;height:38px;background:var(--b500);border-radius:10px;display:flex;align-items:center;justify-content:center;color:white;font-size:18px}
+.lname{font-size:17px;font-weight:700}.lname span{color:var(--b500)}
+.ltit{font-size:14px;font-weight:600;text-align:center;margin-bottom:4px}
+.lsub{font-size:12px;color:var(--g400);text-align:center;margin-bottom:20px}
+.rtabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:18px}
+.rtab{padding:10px 6px;border:1.5px solid var(--g200);border-radius:10px;text-align:center;cursor:pointer;transition:all .15s}
+.rtab:hover{border-color:var(--b100);background:var(--b50)}.rtab.active{border-color:var(--b500);background:var(--b50)}
+.rtab i{font-size:20px;display:block;margin-bottom:3px;color:var(--g400)}.rtab.active i{color:var(--b500)}
+.rtab span{font-size:11.5px;font-weight:600;color:var(--g600)}.rtab.active span{color:var(--b700)}
+.fg{margin-bottom:13px}
+.fl{font-size:12px;font-weight:600;color:var(--g600);display:block;margin-bottom:5px}
+.fi{width:100%;padding:10px 12px;border:1.5px solid var(--g200);border-radius:9px;font-size:13px;font-family:inherit;color:var(--g800);outline:none;background:var(--g50);transition:all .15s}
+.fi:focus{border-color:var(--b500);box-shadow:0 0 0 3px var(--b50);background:var(--w)}
+textarea.fi{resize:vertical;min-height:90px}
+.lbtn{width:100%;padding:12px;background:var(--b500);color:white;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;margin-top:4px}
+.lbtn:hover{background:var(--b600)}
+.lerr{background:var(--r50);border:1px solid var(--r100);border-radius:8px;padding:8px 12px;font-size:12px;color:var(--r700);margin-bottom:10px;display:none}
+.lhint{margin-top:14px;padding:12px;background:var(--g50);border-radius:10px;font-size:11.5px;color:var(--g600);line-height:1.7}
+.lhint strong{color:var(--g800)}
+
+/* APP SHELL */
+#app{display:none;flex-direction:column;height:100vh}
+.topbar{background:var(--w);border-bottom:1px solid var(--g100);padding:0 20px;display:flex;align-items:center;height:56px;box-shadow:var(--sh);flex-shrink:0;z-index:50;gap:0}
+.brand{display:flex;align-items:center;gap:9px;margin-right:24px}
+.bmark{width:30px;height:30px;background:var(--b500);border-radius:7px;display:flex;align-items:center;justify-content:center;color:white;font-size:14px}
+.bname{font-size:14px;font-weight:700}.bname span{color:var(--b500)}
+.nav{display:flex;height:56px}
+.nb{display:flex;align-items:center;gap:5px;padding:0 14px;font-size:13px;font-weight:500;color:var(--g600);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:all .15s;font-family:inherit;white-space:nowrap}
+.nb i{font-size:15px}.nb:hover{color:var(--b500);background:var(--b50)}.nb.active{color:var(--b500);border-bottom-color:var(--b500)}
+.tbr{margin-left:auto;display:flex;align-items:center;gap:8px;flex-shrink:0}
+.apikey-wrap{display:flex;align-items:center;gap:5px;padding:4px 8px;border:1.5px solid var(--g200);border-radius:8px;background:var(--g50)}
+.apikey-wrap i{font-size:14px;color:var(--g400)}
+.apikey-wrap input{border:none;background:transparent;font-size:12px;width:190px;outline:none;color:var(--g800);font-family:monospace}
+.apikey-wrap input::placeholder{color:var(--g400);font-family:inherit}
+.apikey-save{font-size:11px;padding:3px 8px;background:var(--b500);color:white;border:none;border-radius:5px;cursor:pointer;font-family:inherit;font-weight:600}
+.apikey-save:hover{background:var(--b600)}
+
+/* BATCH SELECTOR */
+.batch-btn{display:flex;align-items:center;gap:5px;padding:5px 11px;border:1.5px solid var(--g200);border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;color:var(--g800);background:var(--w);transition:all .15s;position:relative}
+.batch-btn:hover{border-color:var(--b500);color:var(--b600)}
+.batch-dd{position:absolute;top:calc(100%+6px);right:0;background:var(--w);border:1px solid var(--g200);border-radius:12px;box-shadow:var(--sh2);min-width:220px;z-index:200;display:none;padding:6px 0}
+.batch-dd.open{display:block}
+.bdd-item{display:flex;align-items:center;gap:8px;padding:9px 14px;cursor:pointer;font-size:13px;transition:background .1s}
+.bdd-item:hover{background:var(--b50)}.bdd-item.active{color:var(--b500);font-weight:600}
+.bdd-item i{font-size:14px;color:var(--g400)}
+.bdd-sep{height:1px;background:var(--g100);margin:4px 0}
+.bdd-add{color:var(--b500);font-weight:600}
+
+.wp{background:var(--b50);color:var(--b700);font-size:11.5px;font-weight:600;padding:4px 10px;border-radius:99px;border:1px solid var(--b100)}
+.lpill{display:flex;align-items:center;gap:5px;padding:4px 9px;background:var(--gr50);border:1px solid var(--gr100);border-radius:99px;font-size:11.5px;font-weight:500;color:var(--gr700)}
+.ldot{width:6px;height:6px;border-radius:50%;background:var(--gr500);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.uc{display:flex;align-items:center;gap:6px;padding:5px 10px;border:1px solid var(--g200);border-radius:99px;cursor:pointer;transition:all .15s}
+.uc:hover{background:var(--g50)}
+.uav{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700}
+
+/* MSG BADGE */
+.msg-nb{position:relative}
+.msg-dot{position:absolute;top:8px;right:8px;width:7px;height:7px;background:var(--r500);border-radius:50%;border:1.5px solid var(--w);display:none}
+
+.content{flex:1;overflow-y:auto;padding:22px}
+.inner{max-width:1020px;margin:0 auto}
+.panel{display:none}.panel.active{display:block;animation:rise .2s ease}
+@keyframes rise{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+
+/* HERO */
+.hero{border-radius:16px;padding:22px 26px;margin-bottom:18px;display:flex;align-items:center;gap:16px;position:relative;overflow:hidden}
+.hcirc{position:absolute;border-radius:50%;background:rgba(255,255,255,.07);pointer-events:none}
+.hav{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:white;flex-shrink:0;border:2px solid rgba(255,255,255,.3);background:rgba(255,255,255,.15);position:relative;z-index:1}
+.hinfo{flex:1;position:relative;z-index:1}
+.hname{font-size:17px;font-weight:700;color:white;margin-bottom:5px;letter-spacing:-.02em}
+.hmeta{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.hmi{display:flex;align-items:center;gap:4px;font-size:12px;color:rgba(255,255,255,.75)}
+.hstat{text-align:center;position:relative;z-index:1;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:11px;padding:11px 16px;cursor:pointer;transition:background .15s}
+.hstat:hover{background:rgba(255,255,255,.22)}
+.hsnum{font-size:28px;font-weight:800;color:white;line-height:1;letter-spacing:-.03em}
+.hslbl{font-size:11px;color:rgba(255,255,255,.65);margin-top:3px}
+
+/* STATS */
+.sgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-bottom:18px}
+.scard{background:var(--w);border:1px solid var(--g100);border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:11px;box-shadow:var(--sh);cursor:pointer;transition:all .2s}
+.scard:hover{box-shadow:var(--sh2);border-color:var(--b200)}
+.si{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+.si-b{background:var(--b50);color:var(--b500)}.si-gr{background:var(--gr50);color:var(--gr500)}
+.si-am{background:var(--am50);color:var(--am500)}.si-r{background:var(--r50);color:var(--r500)}
+.sv{font-size:21px;font-weight:700;line-height:1;letter-spacing:-.02em}
+.sl{font-size:11px;color:var(--g400);margin-top:3px;font-weight:500}
+
+.shd{font-size:11.5px;font-weight:700;color:var(--g600);margin:0 0 9px;display:flex;align-items:center;gap:6px;text-transform:uppercase;letter-spacing:.04em}
+.shd::before{content:'';width:3px;height:13px;background:var(--b500);border-radius:2px}
+.shd-note{font-size:11px;font-weight:400;color:var(--g400);text-transform:none;letter-spacing:0}
+
+.card{background:var(--w);border:1px solid var(--g100);border-radius:12px;padding:16px 18px;margin-bottom:12px;box-shadow:var(--sh)}
+.tc{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:680px){.tc{grid-template-columns:1fr}}
+
+/* BADGES */
+.bdg{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}
+.b-b{background:var(--b50);color:var(--b700)}.b-gr{background:var(--gr50);color:var(--gr700)}
+.b-am{background:var(--am50);color:var(--am700)}.b-r{background:var(--r50);color:var(--r700)}
+.b-gray{background:var(--g100);color:var(--g600)}.b-wh{background:rgba(255,255,255,.2);color:white}
+
+.av{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0}
+.av-b{background:var(--b50);color:var(--b600)}.av-gr{background:var(--gr50);color:var(--gr700)}
+.av-am{background:var(--am50);color:var(--am700)}.av-r{background:var(--r50);color:var(--r700)}
+
+/* TASK ROW */
+.trow{display:flex;align-items:center;gap:9px;padding:9px 0;border-bottom:1px solid var(--g100);position:relative}
+.trow:last-child{border-bottom:none}
+.trow:hover .tacts{opacity:1}
+.tchk{width:15px;height:15px;accent-color:var(--b500);cursor:pointer;flex-shrink:0}
+.tinfo{flex:1;min-width:0}.tname{font-size:13px;color:var(--g800);font-weight:500}
+.tmeta{font-size:11px;color:var(--g400);margin-top:1px}
+.trow.done .tname{text-decoration:line-through;color:var(--g400)}
+.tprog{background:var(--g100);border-radius:99px;height:5px;width:60px;flex-shrink:0;overflow:hidden}
+.tpf{height:100%;border-radius:99px;background:var(--b500)}.tpf.ok{background:var(--gr500)}
+.tacts{display:flex;gap:4px;opacity:0;transition:opacity .15s;flex-shrink:0}
+@media(hover:none){.tacts{opacity:1}}
+.ticn{width:26px;height:26px;border:none;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .15s;font-family:inherit}
+.ticn.ed{background:var(--b50);color:var(--b500)}.ticn.ed:hover{background:var(--b100)}
+.ticn.dl{background:var(--r50);color:var(--r500)}.ticn.dl:hover{background:var(--r100)}
+.atr{display:flex;gap:7px;margin-top:8px;padding-top:8px;border-top:1px dashed var(--g200)}
+.ati{flex:1;padding:7px 10px;border:1.5px solid var(--g200);border-radius:7px;font-size:12.5px;font-family:inherit;outline:none;color:var(--g800);transition:border-color .15s}
+.ati:focus{border-color:var(--b500)}
+.atb{padding:7px 11px;background:var(--b500);color:white;border:none;border-radius:7px;font-size:12.5px;cursor:pointer;font-family:inherit;font-weight:600;transition:background .15s;white-space:nowrap}
+.atb:hover{background:var(--b600)}
+
+/* TIMELINE */
+.tl{padding-left:22px;position:relative}
+.tl::before{content:'';position:absolute;left:7px;top:0;bottom:0;width:2px;background:var(--g200);border-radius:2px}
+.tli{position:relative;margin-bottom:11px}.tli:last-child{margin-bottom:0}
+.tld{position:absolute;left:-22px;top:5px;width:14px;height:14px;border-radius:50%;background:var(--w);border:2px solid var(--g200)}
+.tld.done{background:var(--b500);border-color:var(--b500)}
+.tld.now{border-color:var(--b500);background:var(--w);box-shadow:0 0 0 3px var(--b50)}
+.tld.now::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:6px;height:6px;border-radius:50%;background:var(--b500)}
+.tlb{background:var(--g50);border:1px solid var(--g100);border-radius:10px;padding:10px 13px;cursor:pointer;transition:all .15s}
+.tlb:hover{border-color:var(--b200);background:var(--b50)}.tlb.now{background:var(--b50);border-color:var(--b200)}
+.tlb.dim{opacity:.4;cursor:default}.tlb.dim:hover{border-color:var(--g100);background:var(--g50)}
+.tlwk{font-size:11px;color:var(--g400);font-weight:500;margin-bottom:2px}.tlwk.now{color:var(--b600)}
+.tltl{font-size:13px;font-weight:600}
+
+.irow{display:flex;align-items:center;gap:11px;padding:12px 0;border-bottom:1px solid var(--g100);cursor:pointer;transition:all .15s;border-radius:8px}
+.irow:last-child{border-bottom:none}
+.irow:hover{background:var(--b50);padding-left:6px;margin-left:-6px;padding-right:6px}
+.snum{font-size:19px;font-weight:700;min-width:36px;text-align:center}
+.shi{color:var(--gr500)}.smi{color:var(--am500)}.slo{color:var(--r500)}
+
+.subrow{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--g100);cursor:pointer;transition:background .15s;border-radius:6px}
+.subrow:last-child{border-bottom:none}
+.subrow:hover{background:var(--b50);padding-left:4px;margin:0 -4px;padding-right:4px}
+
+.dbar{margin-bottom:13px}.dbar:last-child{margin-bottom:0}
+.dbhd{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;cursor:pointer;padding:3px 5px;border-radius:6px;transition:background .15s}
+.dbhd:hover{background:var(--b50)}
+.dbt{background:var(--g100);border-radius:99px;height:8px;overflow:hidden}
+.dbf{height:100%;border-radius:99px;transition:width .7s ease}
+
+/* MODAL */
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;display:flex;align-items:center;justify-content:center;padding:16px}
+.mo.hidden{display:none}
+.mbox{background:var(--w);border-radius:16px;width:100%;max-width:720px;max-height:90vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--sh3)}
+.mhd{padding:16px 22px 13px;border-bottom:1px solid var(--g100);display:flex;align-items:center;gap:11px;flex-shrink:0;background:var(--w)}
+.mtit{font-size:15px;font-weight:700;flex:1}
+.mclose{width:30px;height:30px;border-radius:8px;border:none;background:var(--g100);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--g600);transition:background .15s}
+.mclose:hover{background:var(--g200)}
+.mbody{padding:18px 22px;overflow-y:auto;flex:1}
+.mfoot{padding:12px 22px;border-top:1px solid var(--g100);display:flex;gap:8px;justify-content:flex-end;flex-shrink:0}
+.mfoot.hidden{display:none}
+.mbtn{padding:8px 18px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;font-family:inherit;transition:all .15s}
+.mbtn.pri{background:var(--b500);color:white}.mbtn.pri:hover{background:var(--b600)}
+.mbtn.sec{background:var(--g100);color:var(--g800)}.mbtn.sec:hover{background:var(--g200)}
+.mbtn.dan{background:var(--r50);color:var(--r700)}.mbtn.dan:hover{background:var(--r100)}
+
+.mtabs{display:flex;border-bottom:1px solid var(--g100);margin-bottom:16px;flex-shrink:0;overflow-x:auto}
+.mti{padding:8px 15px;font-size:13px;font-weight:500;color:var(--g600);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap}
+.mti:hover{color:var(--b500)}.mti.active{color:var(--b500);border-bottom-color:var(--b500)}
+.mtp{display:none}.mtp.active{display:block}
+
+.mstats{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:16px}
+.mstat{background:var(--g50);border-radius:10px;padding:11px;text-align:center}
+.msv{font-size:19px;font-weight:700;letter-spacing:-.02em}
+.msl{font-size:11px;color:var(--g400);margin-top:2px}
+
+.cbars{display:flex;align-items:flex-end;gap:8px;height:90px;margin:10px 0 4px}
+.cbc{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1}
+.cbar{width:100%;border-radius:4px 4px 0 0;min-height:4px;transition:height .5s ease}
+.cbar.c-hi{background:var(--gr500)}.cbar.c-mid{background:var(--am500)}.cbar.c-lo{background:var(--r500)}.cbar.c-b{background:var(--b500)}
+.cblbl{font-size:10px;color:var(--g400);white-space:nowrap}.cbval{font-size:11px;font-weight:600;color:var(--g600)}
+
+.rdrow{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.rdlbl{font-size:12.5px;font-weight:600;min-width:90px;color:var(--g800)}
+.rdbar{flex:1;background:var(--g100);border-radius:99px;height:7px;overflow:hidden}
+.rdfill{height:100%;border-radius:99px}
+.rdval{font-size:12px;font-weight:600;min-width:26px;text-align:right}
+
+.dtbl{width:100%;border-collapse:collapse;font-size:12.5px}
+.dtbl th{background:var(--g50);padding:8px 11px;text-align:left;font-weight:600;color:var(--g600);border-bottom:1px solid var(--g100)}
+.dtbl td{padding:8px 11px;border-bottom:1px solid var(--g100);vertical-align:middle}
+.dtbl tr:last-child td{border-bottom:none}
+.dtbl tr.clickable:hover td{background:var(--b50);cursor:pointer}
+
+/* REPORT ITEM */
+.rpt-item{display:flex;align-items:center;gap:10px;padding:11px;background:var(--g50);border-radius:10px;margin-bottom:8px;cursor:pointer;transition:all .15s;border:1px solid transparent}
+.rpt-item:last-child{margin-bottom:0}
+.rpt-item:hover{background:var(--b50);border-color:var(--b100)}
+.rpt-item-info{flex:1;min-width:0}
+.rpt-item-title{font-size:13px;font-weight:600;color:var(--g800)}
+.rpt-item-meta{font-size:11.5px;color:var(--g400);margin-top:2px}
+.rpt-item-acts{display:flex;gap:5px;flex-shrink:0}
+
+/* CHAT PANEL */
+.chat-layout{display:flex;height:500px;border:1px solid var(--g100);border-radius:12px;overflow:hidden}
+.chat-sb{width:190px;border-right:1px solid var(--g100);overflow-y:auto;background:var(--g50);flex-shrink:0}
+.chat-sb-hd{padding:12px 14px;font-size:12px;font-weight:700;color:var(--g600);background:var(--w);border-bottom:1px solid var(--g100);text-transform:uppercase;letter-spacing:.04em}
+.chat-main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.ccontact{display:flex;align-items:center;gap:8px;padding:10px 12px;cursor:pointer;border-bottom:1px solid var(--g100);transition:background .15s;position:relative}
+.ccontact:hover,.ccontact.active{background:var(--b50)}
+.ccname{font-size:12.5px;font-weight:600}
+.cclast{font-size:11px;color:var(--g400);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:105px}
+.cc-unread{position:absolute;right:10px;top:10px;width:16px;height:16px;background:var(--r500);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white}
+.chat-hd{padding:11px 14px;border-bottom:1px solid var(--g100);display:flex;align-items:center;gap:8px;background:var(--w);flex-shrink:0}
+.chat-msgs{flex:1;overflow-y:auto;padding:12px 14px;display:flex;flex-direction:column;gap:9px;background:var(--g50)}
+.cmsg{display:flex;gap:7px;align-items:flex-end}
+.cmsg.mine{flex-direction:row-reverse}
+.cmsg-bub{padding:8px 12px;border-radius:11px;font-size:13px;line-height:1.6;max-width:78%}
+.cmsg.other .cmsg-bub{background:var(--w);border:1px solid var(--g100);border-radius:4px 11px 11px 11px;color:var(--g800)}
+.cmsg.mine .cmsg-bub{background:var(--b500);color:white;border-radius:11px 4px 11px 11px}
+.cmsg-t{font-size:10px;color:var(--g400);margin-top:2px}
+.chat-date-divider{text-align:center;font-size:11px;color:var(--g400);margin:4px 0}
+.chat-foot{padding:10px 12px;border-top:1px solid var(--g100);display:flex;gap:7px;background:var(--w);flex-shrink:0}
+.chat-inp{flex:1;padding:8px 11px;border:1.5px solid var(--g200);border-radius:8px;font-size:13px;font-family:inherit;color:var(--g800);outline:none;transition:all .15s}
+.chat-inp:focus{border-color:var(--b500);box-shadow:0 0 0 2px var(--b50)}
+.chat-send{padding:8px 14px;background:var(--b500);color:white;border:none;border-radius:8px;font-size:13px;cursor:pointer;font-weight:600;font-family:inherit;transition:background .15s}
+.chat-send:hover{background:var(--b600)}
+.chat-empty{flex:1;display:flex;align-items:center;justify-content:center;color:var(--g400);font-size:13px;flex-direction:column;gap:8px;background:var(--g50)}
+
+/* AI CHAT */
+.aishell{border:1px solid var(--g100);border-radius:14px;overflow:hidden;box-shadow:var(--sh2)}
+.aihd{padding:11px 15px;background:var(--b500);display:flex;align-items:center;gap:7px}
+.aipulse{width:7px;height:7px;border-radius:50%;background:#52FFAA;animation:pulse 2s infinite}
+.aimw{padding:13px 15px;min-height:220px;max-height:340px;overflow-y:auto;display:flex;flex-direction:column;gap:9px;background:var(--g50)}
+.amsg{display:flex;gap:7px;align-items:flex-start}
+.amsg.user{flex-direction:row-reverse}
+.abub{padding:8px 12px;border-radius:12px;font-size:13px;line-height:1.6;max-width:80%}
+.amsg.bot .abub{background:var(--w);border:1px solid var(--g100);border-radius:4px 12px 12px 12px;color:var(--g800);box-shadow:var(--sh)}
+.amsg.user .abub{background:var(--b500);color:white;border-radius:12px 4px 12px 12px}
+.afoot{display:flex;gap:7px;padding:10px 13px;background:var(--w);border-top:1px solid var(--g100)}
+.ainp{flex:1;padding:8px 12px;border:1.5px solid var(--g200);border-radius:8px;font-size:13px;font-family:inherit;color:var(--g800);outline:none;transition:all .15s}
+.ainp:focus{border-color:var(--b500);box-shadow:0 0 0 2px var(--b50)}
+.asend{padding:8px 14px;background:var(--b500);color:white;border:none;border-radius:8px;font-size:13px;cursor:pointer;font-weight:600;font-family:inherit;transition:background .15s}
+.asend:hover{background:var(--b600)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.chip{padding:5px 12px;border:1.5px solid var(--g200);border-radius:99px;font-size:12px;cursor:pointer;background:var(--w);color:var(--g600);transition:all .15s;font-family:inherit;font-weight:500}
+.chip:hover{background:var(--b50);color:var(--b600);border-color:var(--b200)}
+.dotld span{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--g400);margin:0 2px;animation:dl .9s infinite}
+.dotld span:nth-child(2){animation-delay:.15s}.dotld span:nth-child(3){animation-delay:.3s}
+@keyframes dl{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
+
+.act-btn{display:inline-flex;align-items:center;gap:5px;padding:7px 12px;background:var(--w);border:1px solid var(--g200);border-radius:7px;font-size:12px;color:var(--g600);cursor:pointer;font-family:inherit;font-weight:500;transition:all .15s;margin:0 4px 6px 0}
+.act-btn:hover{background:var(--b50);color:var(--b600);border-color:var(--b200)}
+.aitip{background:var(--b50);border:1px solid var(--b100);border-radius:10px;padding:11px 13px;margin-bottom:12px;font-size:13px;color:var(--b700);display:flex;align-items:flex-start;gap:7px;line-height:1.65}
+.aitip i{font-size:15px;flex-shrink:0;margin-top:1px;color:var(--b500)}
+
+.rrow{display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:1px solid var(--g100)}
+.rrow:last-child{border-bottom:none}
+.rlbl{font-size:12px;font-weight:600;color:var(--g600);min-width:70px;flex-shrink:0;margin-top:2px}
+.rval{font-size:13px;color:var(--g800);line-height:1.65}
+
+.contact-btns{display:flex;gap:9px;margin-top:12px}
+.cbtn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;border:none;font-family:inherit;transition:all .15s}
+.cbtn.m{background:var(--b500);color:white}.cbtn.m:hover{background:var(--b600)}
+.cbtn.i{background:var(--gr500);color:white}.cbtn.i:hover{background:var(--gr700)}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--g800);color:white;padding:9px 18px;border-radius:99px;font-size:13px;font-weight:500;z-index:9999;opacity:0;transition:all .28s;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+<!-- LOGIN -->
+<div id="login-screen">
+<div class="lc">
+  <div class="llogo"><div class="lmark"><i class="ti ti-rocket"></i></div><div class="lname">成长<span>导航</span>平台</div></div>
+  <div class="ltit">登录账号</div><div class="lsub">请选择角色并输入账号密码</div>
+  <div class="rtabs">
+    <div class="rtab active" onclick="selRole('intern')" id="rt-intern"><i class="ti ti-user"></i><span>实习生</span></div>
+    <div class="rtab" onclick="selRole('mentor')" id="rt-mentor"><i class="ti ti-users"></i><span>导师</span></div>
+    <div class="rtab" onclick="selRole('hr')" id="rt-hr"><i class="ti ti-chart-bar"></i><span>HR</span></div>
+  </div>
+  <div class="lerr" id="lerr">账号或密码错误，请重试</div>
+  <div class="fg"><label class="fl">账号</label><input class="fi" id="lu" placeholder="请输入账号" onkeydown="if(event.key==='Enter')doLogin()"></div>
+  <div class="fg"><label class="fl">密码</label><input class="fi" id="lp" type="password" placeholder="请输入密码" onkeydown="if(event.key==='Enter')doLogin()"></div>
+  <button class="lbtn" onclick="doLogin()">登 录</button>
+  <div class="lhint"><strong>测试账号</strong><br>实习生：chenchen / intern123<br>导师：liming / mentor456<br>HR：hrAdmin / hr789</div>
+</div>
+</div>
+
+<!-- APP -->
+<div id="app">
+<div class="topbar">
+  <div class="brand"><div class="bmark"><i class="ti ti-rocket"></i></div><div class="bname">成长<span>导航</span></div></div>
+  <nav class="nav" id="mnav"></nav>
+  <div class="tbr">
+    <div id="batch-wrap" style="display:none;position:relative">
+      <div class="batch-btn" onclick="toggleBatch(event)">
+        <i class="ti ti-calendar-event" style="font-size:13px;color:var(--b500)"></i>
+        <span id="batch-label">2025届夏季实习</span>
+        <i class="ti ti-chevron-down" style="font-size:12px;color:var(--g400)"></i>
+      </div>
+      <div class="batch-dd" id="batch-dd"></div>
+    </div>
+    <div class="apikey-wrap" title="输入API Key以启用AI功能">
+      <i class="ti ti-key"></i>
+      <input type="password" id="api-key-input" placeholder="输入 Anthropic API Key" autocomplete="off">
+      <button class="apikey-save" onclick="saveApiKey()">保存</button>
+    </div>
+    <div class="wp" id="week-label">第3周/共4周</div>
+    <div class="nb msg-nb" id="nb-msg" style="display:none" onclick="switchTab('msg')">
+      <i class="ti ti-message-circle"></i>消息
+      <div class="msg-dot" id="msg-dot"></div>
+    </div>
+    <div class="uc" onclick="logout()">
+      <div class="uav" id="uav"></div>
+      <span style="font-size:12px;font-weight:500" id="uname"></span>
+      <i class="ti ti-logout" style="font-size:13px;color:var(--g400)"></i>
+    </div>
+  </div>
+</div>
+<div class="content"><div class="inner">
+
+<!-- INTERN PANEL -->
+<div id="p-intern" class="panel">
+  <div class="hero" style="background:linear-gradient(135deg,#1664FF,#0A3FAD)">
+    <div class="hcirc" style="width:180px;height:180px;right:-40px;top:-60px"></div>
+    <div class="hav" style="width:52px;height:52px;font-size:20px">陈</div>
+    <div class="hinfo">
+      <div class="hname">陈晨</div>
+      <div class="hmeta"><div class="hmi"><i class="ti ti-briefcase"></i>研发岗</div><div class="hmi"><i class="ti ti-user-check"></i>导师：李明</div></div>
+    </div>
+    <div class="hstat" onclick="openProgressModal()"><div class="hsnum">68%</div><div class="hslbl">整体进度 ↗</div></div>
+  </div>
+  <div class="sgrid">
+    <div class="scard"><div class="si si-b"><i class="ti ti-checklist"></i></div><div><div class="sv" id="itaskc">4/6</div><div class="sl">本周任务</div></div></div>
+    <div class="scard" onclick="openFeedbackModal()"><div class="si si-am"><i class="ti ti-message-dots"></i></div><div><div class="sv">3</div><div class="sl">待导师反馈 ↗</div></div></div>
+    <div class="scard" onclick="openProgressModal()"><div class="si si-gr"><i class="ti ti-clock"></i></div><div><div class="sv">12天</div><div class="sl">剩余实习 ↗</div></div></div>
+  </div>
+  <div class="tc">
+    <div>
+      <div class="shd">成长路线图 <span class="shd-note">点击查看历史</span></div>
+      <div class="card" style="padding:12px 14px">
+        <div class="tl">
+          <div class="tli"><div class="tld done"></div><div class="tlb" onclick="openWeekModal(1)"><div class="tlwk">第1周·已完成</div><div class="tltl">入职融入期</div></div></div>
+          <div class="tli"><div class="tld done"></div><div class="tlb" onclick="openWeekModal(2)"><div class="tlwk">第2周·已完成</div><div class="tltl">业务理解期</div></div></div>
+          <div class="tli"><div class="tld now"></div><div class="tlb now" onclick="openWeekModal(3)"><div class="tlwk now">第3周·进行中 <span class="bdg b-b" style="font-size:9px">当前</span></div><div class="tltl" style="color:var(--b700)">独立承担期</div></div></div>
+          <div class="tli"><div class="tld"></div><div class="tlb dim"><div class="tlwk">第4周</div><div class="tltl">成果汇报期</div></div></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="shd">本周任务清单</div>
+      <div class="card" style="padding:11px 14px">
+        <div id="itasks">
+          <div class="trow done"><input type="checkbox" class="tchk" checked onchange="ckTask(this,'itasks')"><div class="tinfo"><div class="tname">用户中心模块重构</div><div class="tmeta">截止周五·高优先级</div></div><div class="tprog"><div class="tpf ok" style="width:100%"></div></div><div class="tacts"><button class="ticn ed" onclick="editTask(this)"><i class="ti ti-edit"></i></button><button class="ticn dl" onclick="delTask(this)"><i class="ti ti-trash"></i></button></div></div>
+          <div class="trow done"><input type="checkbox" class="tchk" checked onchange="ckTask(this,'itasks')"><div class="tinfo"><div class="tname">技术方案文档输出</div><div class="tmeta">截止周四</div></div><div class="tprog"><div class="tpf ok" style="width:100%"></div></div><div class="tacts"><button class="ticn ed" onclick="editTask(this)"><i class="ti ti-edit"></i></button><button class="ticn dl" onclick="delTask(this)"><i class="ti ti-trash"></i></button></div></div>
+          <div class="trow done"><input type="checkbox" class="tchk" checked onchange="ckTask(this,'itasks')"><div class="tinfo"><div class="tname">接口联调与自测</div><div class="tmeta">截止周三</div></div><div class="tprog"><div class="tpf ok" style="width:100%"></div></div><div class="tacts"><button class="ticn ed" onclick="editTask(this)"><i class="ti ti-edit"></i></button><button class="ticn dl" onclick="delTask(this)"><i class="ti ti-trash"></i></button></div></div>
+          <div class="trow done"><input type="checkbox" class="tchk" checked onchange="ckTask(this,'itasks')"><div class="tinfo"><div class="tname">参与代码Review</div></div><div class="tprog"><div class="tpf ok" style="width:100%"></div></div><div class="tacts"><button class="ticn ed" onclick="editTask(this)"><i class="ti ti-edit"></i></button><button class="ticn dl" onclick="delTask(this)"><i class="ti ti-trash"></i></button></div></div>
+          <div class="trow"><input type="checkbox" class="tchk" onchange="ckTask(this,'itasks')"><div class="tinfo"><div class="tname">产品评审会输出建议</div><div class="tmeta">截止周五</div></div><div class="tprog"><div class="tpf" style="width:0%"></div></div><div class="tacts"><button class="ticn ed" onclick="editTask(this)"><i class="ti ti-edit"></i></button><button class="ticn dl" onclick="delTask(this)"><i class="ti ti-trash"></i></button></div></div>
+          <div class="trow"><input type="checkbox" class="tchk" onchange="ckTask(this,'itasks')"><div class="tinfo"><div class="tname">完成跨部门协作任务</div></div><div class="tprog"><div class="tpf" style="width:0%"></div></div><div class="tacts"><button class="ticn ed" onclick="editTask(this)"><i class="ti ti-edit"></i></button><button class="ticn dl" onclick="delTask(this)"><i class="ti ti-trash"></i></button></div></div>
+        </div>
+        <div class="atr"><input class="ati" id="inew" placeholder="添加新任务…" onkeydown="if(event.key==='Enter')addTask('itasks','inew')"><button class="atb" onclick="addTask('itasks','inew')"><i class="ti ti-plus"></i> 添加</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Intern weekly report card — prominent entry below the two-col grid -->
+  <div style="margin-top:14px">
+    <div class="shd">工作周报</div>
+    <div class="card" style="padding:14px 16px;cursor:pointer;border:1.5px solid var(--b100);background:var(--b50)" onclick="openInternReportModal()">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:44px;height:44px;background:var(--b500);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:22px;color:white;flex-shrink:0"><i class="ti ti-notebook"></i></div>
+        <div style="flex:1">
+          <div style="font-size:13.5px;font-weight:700;color:var(--b700)">提交 / 查看工作周报</div>
+          <div style="font-size:12px;color:var(--b600);margin-top:2px">在线填写 · 上传附件 · 查看历史 · 同步给导师和HR</div>
+        </div>
+        <i class="ti ti-chevron-right" style="color:var(--b500);font-size:18px"></i>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid var(--b100)">
+        <div style="flex:1;text-align:center;font-size:12px"><div style="font-size:18px;font-weight:700;color:var(--b700)" id="irpt-count">0</div><div style="color:var(--b600);margin-top:1px">历史周报</div></div>
+        <div style="width:1px;background:var(--b100)"></div>
+        <div style="flex:1;text-align:center;font-size:12px"><div style="font-size:18px;font-weight:700;color:var(--b700)">第3周</div><div style="color:var(--b600);margin-top:1px">当前周次</div></div>
+        <div style="width:1px;background:var(--b100)"></div>
+        <div style="flex:1;text-align:center;font-size:12px"><div style="font-size:18px;font-weight:700;color:var(--am700)" id="irpt-status">待提交</div><div style="color:var(--am600);margin-top:1px">本周状态</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MENTOR PANEL -->
+<div id="p-mentor" class="panel">
+  <div class="hero" style="background:linear-gradient(135deg,#0A3FAD,#1664FF)">
+    <div class="hcirc" style="width:160px;height:160px;right:-40px;top:-50px"></div>
+    <div class="hav" style="width:52px;height:52px;font-size:20px">李</div>
+    <div class="hinfo">
+      <div class="hname">李明 <span class="bdg b-wh" style="margin-left:6px;font-size:11px">导师</span></div>
+      <div class="hmeta"><div class="hmi"><i class="ti ti-building"></i>研发部高级工程师</div><div class="hmi"><i class="ti ti-users"></i>带教2名实习生</div></div>
+    </div>
+    <div class="hstat" style="cursor:default"><div class="hsnum" style="font-size:22px">周三</div><div class="hslbl">下次Check-in</div></div>
+  </div>
+  <div class="sgrid">
+    <div class="scard" onclick="openListModal('all')"><div class="si si-b"><i class="ti ti-users"></i></div><div><div class="sv">2</div><div class="sl">全部实习生</div></div></div>
+    <div class="scard" onclick="openListModal('good')"><div class="si si-gr"><i class="ti ti-circle-check"></i></div><div><div class="sv" style="color:var(--gr500)">1</div><div class="sl">状态良好 ↗</div></div></div>
+    <div class="scard" onclick="openListModal('risk')"><div class="si si-am"><i class="ti ti-alert-triangle"></i></div><div><div class="sv" style="color:var(--am500)">1</div><div class="sl">需关注 ↗</div></div></div>
+  </div>
+  <div class="tc">
+    <div>
+      <div class="shd">实习生动态 <span class="shd-note">点击查看详情</span></div>
+      <div class="card">
+        <div class="irow" onclick="openInternModal('chenchen')"><div class="av av-b" style="width:40px;height:40px;font-size:14px">陈</div><div style="flex:1"><div style="font-size:13px;font-weight:600">陈晨</div><div style="font-size:11px;color:var(--g400);margin-top:2px">研发岗·第3周·进度68%</div><div style="margin-top:5px;display:flex;gap:4px"><span class="bdg b-gr"><i class="ti ti-trending-up" style="font-size:10px"></i>正常</span><span class="bdg b-b">4/6</span></div></div><div style="text-align:center"><div class="snum shi">86</div><div style="font-size:11px;color:var(--g400)">适岗分</div></div><i class="ti ti-chevron-right" style="color:var(--g400);font-size:15px"></i></div>
+        <div class="irow" onclick="openInternModal('wanghao')" style="border-bottom:none"><div class="av av-am" style="width:40px;height:40px;font-size:14px">王</div><div style="flex:1"><div style="font-size:13px;font-weight:600">王浩</div><div style="font-size:11px;color:var(--g400);margin-top:2px">研发岗·第3周·进度41%</div><div style="margin-top:5px;display:flex;gap:4px"><span class="bdg b-am"><i class="ti ti-alert-triangle" style="font-size:10px"></i>需跟进</span><span class="bdg b-r">2/6</span></div></div><div style="text-align:center"><div class="snum smi">61</div><div style="font-size:11px;color:var(--g400)">适岗分</div></div><i class="ti ti-chevron-right" style="color:var(--g400);font-size:15px"></i></div>
+      </div>
+      <div class="shd" style="margin-top:14px">AI带教建议</div>
+      <div class="aitip"><i class="ti ti-bulb"></i><div>王浩本周完成率33%，卡点在独立开发模块。建议：① 拆解大任务；② 每日5min站会；③ 安排结对编程。</div></div>
+      <div style="margin-top:14px">
+        <div class="shd">带教周报管理</div>
+        <div class="card" style="padding:14px 16px;cursor:pointer;border:1.5px solid var(--b100);background:var(--b50)" onclick="openReportModal()">
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="width:44px;height:44px;background:var(--b500);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:22px;color:white;flex-shrink:0"><i class="ti ti-file-text"></i></div>
+            <div style="flex:1">
+              <div style="font-size:13.5px;font-weight:700;color:var(--b700)">提交 / 查看带教周报</div>
+              <div style="font-size:12px;color:var(--b600);margin-top:2px">在线填写 · 上传附件 · 查看历史 · 提交给HR</div>
+            </div>
+            <i class="ti ti-chevron-right" style="color:var(--b500);font-size:18px"></i>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid var(--b100)">
+            <div style="flex:1;text-align:center;font-size:12px"><div style="font-size:18px;font-weight:700;color:var(--b700)" id="rpt-count">3</div><div style="color:var(--b600);margin-top:1px">历史周报</div></div>
+            <div style="width:1px;background:var(--b100)"></div>
+            <div style="flex:1;text-align:center;font-size:12px"><div style="font-size:18px;font-weight:700;color:var(--gr700)">本周</div><div style="color:var(--gr700);margin-top:1px">第3周</div></div>
+            <div style="width:1px;background:var(--b100)"></div>
+            <div style="flex:1;text-align:center;font-size:12px"><div style="font-size:18px;font-weight:700;color:var(--am700)" id="rpt-status">待提交</div><div style="color:var(--am600);margin-top:1px">本周状态</div></div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:12px;display:flex;gap:6px;flex-wrap:wrap">
+        <button class="act-btn" onclick="goAsk('帮我生成第3周带教计划模板')"><i class="ti ti-template"></i>带教计划 ↗</button>
+        <button class="act-btn" onclick="goAsk('帮我写与进度落后实习生沟通话术')"><i class="ti ti-message"></i>沟通话术 ↗</button>
+      </div>
+    </div>
+    <div>
+      <div class="shd">本周带教清单</div>
+      <div class="card" style="padding:11px 14px">
+        <div id="mtasks">
+          <div class="trow done"><input type="checkbox" class="tchk" checked onchange="ckTask(this,'mtasks')"><div class="tinfo"><div class="tname">周一：对齐周目标（30min）</div></div><div class="tacts"><button class="ticn ed" onclick="editTask(this)"><i class="ti ti-edit"></i></button><button class="ticn dl" onclick="delTask(this)"><i class="ti ti-trash"></i></button></div></div>
+          <div class="trow done"><input type="checkbox" class="tchk" checked onchange="ckTask(this,'mtasks')"><div class="tinfo"><div class="tname">周三：进度Check-in（15min）</div></div><div class="tacts"><button class="ticn ed" onclick="editTask(this)"><i class="ti ti-edit"></i></button><button class="ticn dl" onclick="delTask(this)"><i class="ti ti-trash"></i></button></div></div>
+          <div class="trow"><input type="checkbox" class="tchk" onchange="ckTask(this,'mtasks')"><div class="tinfo"><div class="tname">周五：代码Review+书面反馈</div></div><div class="tacts"><button class="ticn ed" onclick="editTask(this)"><i class="ti ti-edit"></i></button><button class="ticn dl" onclick="delTask(this)"><i class="ti ti-trash"></i></button></div></div>
+          <div class="trow"><input type="checkbox" class="tchk" onchange="ckTask(this,'mtasks')"><div class="tinfo"><div class="tname">提交导师周报至HR</div><div class="tmeta">截止周五17:00</div></div><div class="tacts"><button class="ticn ed" onclick="editTask(this)"><i class="ti ti-edit"></i></button><button class="ticn dl" onclick="delTask(this)"><i class="ti ti-trash"></i></button></div></div>
+          <div class="trow"><input type="checkbox" class="tchk" onchange="ckTask(this,'mtasks')"><div class="tinfo"><div class="tname">王浩专项辅导</div><div class="tmeta" style="color:var(--am500)">本周重点</div></div><div class="tacts"><button class="ticn ed" onclick="editTask(this)"><i class="ti ti-edit"></i></button><button class="ticn dl" onclick="delTask(this)"><i class="ti ti-trash"></i></button></div></div>
+        </div>
+        <div class="atr"><input class="ati" id="mnew" placeholder="添加带教任务…" onkeydown="if(event.key==='Enter')addTask('mtasks','mnew')"><button class="atb" onclick="addTask('mtasks','mnew')"><i class="ti ti-plus"></i> 添加</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HR PANEL -->
+<div id="p-hr" class="panel">
+  <div class="hero" style="background:linear-gradient(135deg,#031A54,#185FA5)">
+    <div class="hcirc" style="width:180px;height:180px;right:-40px;top:-55px"></div>
+    <div class="hav" style="width:52px;height:52px;font-size:22px"><i class="ti ti-building-community"></i></div>
+    <div class="hinfo">
+      <div class="hname">本批次全览</div>
+      <div class="hmeta"><div class="hmi"><i class="ti ti-users"></i>共20人</div><div class="hmi"><i class="ti ti-calendar"></i>当前第3周</div></div>
+    </div>
+  </div>
+  <div class="sgrid">
+    <div class="scard"><div class="si si-b"><i class="ti ti-users"></i></div><div><div class="sv">20</div><div class="sl">实习生总数</div></div></div>
+    <div class="scard" onclick="openHRListModal('good')"><div class="si si-gr"><i class="ti ti-circle-check"></i></div><div><div class="sv" style="color:var(--gr500)">14</div><div class="sl">状态正常 ↗</div></div></div>
+    <div class="scard" onclick="openHRListModal('risk')"><div class="si si-r"><i class="ti ti-alert-circle"></i></div><div><div class="sv" style="color:var(--r500)">6</div><div class="sl">需关注 ↗</div></div></div>
+  </div>
+  <div class="tc">
+    <div>
+      <div class="shd">各部门适岗率 <span class="shd-note">点击查看完整数据</span></div>
+      <div class="card">
+        <div class="dbar"><div class="dbhd" onclick="openDeptModal('rd')"><span style="font-size:13px;font-weight:600">研发部 <span style="font-weight:400;color:var(--g400)">(8人)</span></span><span style="display:flex;align-items:center;gap:5px"><span style="font-size:13px;font-weight:700;color:var(--b600)">78%</span><i class="ti ti-chevron-right" style="font-size:13px;color:var(--g400)"></i></span></div><div class="dbt"><div class="dbf" style="width:78%;background:var(--b500)"></div></div></div>
+        <div class="dbar"><div class="dbhd" onclick="openDeptModal('pm')"><span style="font-size:13px;font-weight:600">产品部 <span style="font-weight:400;color:var(--g400)">(7人)</span></span><span style="display:flex;align-items:center;gap:5px"><span style="font-size:13px;font-weight:700;color:var(--gr700)">71%</span><i class="ti ti-chevron-right" style="font-size:13px;color:var(--g400)"></i></span></div><div class="dbt"><div class="dbf" style="width:71%;background:var(--gr500)"></div></div></div>
+        <div class="dbar" style="margin-bottom:0"><div class="dbhd" onclick="openDeptModal('sales')"><span style="font-size:13px;font-weight:600">销售部 <span style="font-weight:400;color:var(--g400)">(5人)</span></span><span style="display:flex;align-items:center;gap:5px"><span style="font-size:13px;font-weight:700;color:var(--am700)">65%</span><i class="ti ti-chevron-right" style="font-size:13px;color:var(--g400)"></i></span></div><div class="dbt"><div class="dbf" style="width:65%;background:var(--am500)"></div></div></div>
+      </div>
+      <div class="shd" style="margin-top:14px">导师周报提交 <span class="shd-note">点击查看周报</span></div>
+      <div class="card">
+        <div class="subrow" onclick="openHRReportModal('liming')"><div class="av av-gr" style="width:32px;height:32px;font-size:12px">李</div><div style="flex:1;font-size:13px;font-weight:600">李明 <span style="font-weight:400;color:var(--g400)">研发部</span></div><span class="bdg b-gr"><i class="ti ti-check"></i>已提交</span><i class="ti ti-chevron-right" style="color:var(--g400);font-size:13px;margin-left:6px"></i></div>
+        <div class="subrow" onclick="openHRReportModal('zhaowei')"><div class="av av-am" style="width:32px;height:32px;font-size:12px">赵</div><div style="flex:1;font-size:13px;font-weight:600">赵薇 <span style="font-weight:400;color:var(--g400)">产品部</span></div><span class="bdg b-am"><i class="ti ti-clock"></i>待提交</span><i class="ti ti-chevron-right" style="color:var(--g400);font-size:13px;margin-left:6px"></i></div>
+        <div class="subrow" onclick="openHRReportModal('sunlei')" style="border-bottom:none"><div class="av av-r" style="width:32px;height:32px;font-size:12px">孙</div><div style="flex:1;font-size:13px;font-weight:600">孙磊 <span style="font-weight:400;color:var(--g400)">销售部</span></div><span class="bdg b-r"><i class="ti ti-alert-triangle"></i>已逾期</span><i class="ti ti-chevron-right" style="color:var(--g400);font-size:13px;margin-left:6px"></i></div>
+      </div>
+    </div>
+    <div>
+      <div class="shd">适岗风险预警 <span class="shd-note">点击查看详情</span></div>
+      <div class="card">
+        <div class="irow" onclick="openRiskModal('wanghao')"><div class="av av-r" style="width:38px;height:38px;font-size:14px">王</div><div style="flex:1"><div style="font-size:13px;font-weight:600">王浩</div><div style="font-size:11px;color:var(--g400);margin-top:1px">研发岗·导师李明·进度41%</div><div style="margin-top:4px"><span class="bdg b-r">高风险</span></div></div><div style="text-align:center"><div class="snum slo">61</div><div style="font-size:11px;color:var(--g400)">适岗分</div></div><i class="ti ti-chevron-right" style="color:var(--g400);font-size:14px"></i></div>
+        <div class="irow" onclick="openRiskModal('zhangyu')"><div class="av av-am" style="width:38px;height:38px;font-size:14px">张</div><div style="flex:1"><div style="font-size:13px;font-weight:600">张雨</div><div style="font-size:11px;color:var(--g400);margin-top:1px">产品岗·导师赵薇·进度58%</div><div style="margin-top:4px"><span class="bdg b-am">中风险</span></div></div><div style="text-align:center"><div class="snum smi">67</div><div style="font-size:11px;color:var(--g400)">适岗分</div></div><i class="ti ti-chevron-right" style="color:var(--g400);font-size:14px"></i></div>
+        <div class="irow" onclick="openRiskModal('liuwei')" style="border-bottom:none"><div class="av av-am" style="width:38px;height:38px;font-size:14px">刘</div><div style="flex:1"><div style="font-size:13px;font-weight:600">刘伟</div><div style="font-size:11px;color:var(--g400);margin-top:1px">销售岗·导师孙磊·进度61%</div><div style="margin-top:4px"><span class="bdg b-am">中风险</span></div></div><div style="text-align:center"><div class="snum smi">70</div><div style="font-size:11px;color:var(--g400)">适岗分</div></div><i class="ti ti-chevron-right" style="color:var(--g400);font-size:14px"></i></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- AI PANEL -->
+<div id="p-ai" class="panel">
+  <div style="margin-bottom:16px"><div style="font-size:16px;font-weight:700;margin-bottom:3px">AI成长导航助手</div><div style="font-size:13px;color:var(--g400)" id="ai-privacy-note">对话私密，记录仅你可见</div></div>
+  <div class="chips">
+    <button class="chip" onclick="aq('我是实习生第3周，本周优先做什么？')"><i class="ti ti-list-check" style="font-size:12px;margin-right:3px"></i>本周优先</button>
+    <button class="chip" onclick="aq('开发进度卡住了，怎么和导师沟通？')"><i class="ti ti-message-circle" style="font-size:12px;margin-right:3px"></i>沟通卡点</button>
+    <button class="chip" onclick="aq('生成第3周带教周计划模板')"><i class="ti ti-template" style="font-size:12px;margin-right:3px"></i>带教模板</button>
+    <button class="chip" onclick="aq('本批次适岗风险分析')"><i class="ti ti-chart-bar" style="font-size:12px;margin-right:3px"></i>风险分析</button>
+    <button class="chip" onclick="aq('设计实习生转正评估体系')"><i class="ti ti-award" style="font-size:12px;margin-right:3px"></i>转正评估</button>
+  </div>
+  <div class="aishell">
+    <div class="aihd"><div class="aipulse"></div><span style="font-size:13px;font-weight:700;color:white;margin-left:4px">成长导航 AI</span><span style="font-size:11px;color:rgba(255,255,255,.65);margin-left:6px">· 每个账号对话独立存储</span><span class="bdg b-wh" style="margin-left:auto;font-size:10.5px">ONLINE</span></div>
+    <div class="aimw" id="aimsgs"></div>
+    <div class="afoot"><input class="ainp" id="ainp" placeholder="输入问题…" onkeydown="if(event.key==='Enter')sendAI()"><button class="asend" onclick="sendAI()"><i class="ti ti-send"></i> 发送</button></div>
+  </div>
+</div>
+
+<!-- MSG PANEL -->
+<div id="p-msg" class="panel">
+  <div style="margin-bottom:16px"><div style="font-size:16px;font-weight:700;margin-bottom:3px">消息中心</div><div style="font-size:13px;color:var(--g400)">历史记录自动保存，每个会话独立存档</div></div>
+  <div class="chat-layout" id="chat-layout">
+    <div class="chat-sb">
+      <div class="chat-sb-hd">联系人</div>
+      <div id="chat-contacts"></div>
+    </div>
+    <div class="chat-main" id="chat-main">
+      <div class="chat-empty"><i class="ti ti-message-circle" style="font-size:32px;color:var(--g300)"></i><span>选择联系人开始聊天</span></div>
+    </div>
+  </div>
+</div>
+
+</div></div></div><!-- inner/content/app -->
+
+<!-- MODAL -->
+<div class="mo hidden" id="mo">
+  <div class="mbox">
+    <div class="mhd"><div class="mtit" id="mo-title"></div><button class="mclose" onclick="closeM()"><i class="ti ti-x"></i></button></div>
+    <div class="mbody" id="mo-body"></div>
+    <div class="mfoot hidden" id="mo-foot"></div>
+  </div>
+</div>
+<script>
+/* ══════════════════════════════════════
+   DATA & STATE
+══════════════════════════════════════ */
+const ACCOUNTS={
+  intern:{user:'chenchen',pass:'intern123',name:'陈晨',role:'intern',avCls:'av-b',tabs:['intern','ai','msg']},
+  mentor:{user:'liming',pass:'mentor456',name:'李明',role:'mentor',avCls:'av-gr',tabs:['mentor','ai','msg']},
+  hr:{user:'hrAdmin',pass:'hr789',name:'HR管理员',role:'hr',avCls:'av-b',tabs:['hr','ai','msg']}
+}
+const TAB_CFG={intern:{icon:'ti-user',lbl:'实习生'},mentor:{icon:'ti-users',lbl:'导师'},hr:{icon:'ti-chart-bar',lbl:'HR'},ai:{icon:'ti-robot',lbl:'AI助手'},msg:{icon:'ti-message-circle',lbl:'消息'}}
+let CUR=null, SEL='intern', curChat=null
+
+/* localStorage helpers */
+const lsGet=(k,d)=>{try{const v=localStorage.getItem(k);return v!==null?JSON.parse(v):d}catch{return d}}
+const lsSet=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch{}}
+
+/* ── Batches ── */
+/* ── Batch-specific data ── */
+const BATCH_DATA={
+  '2025summer':{
+    name:'2025届夏季实习',week:'第3周/共4周',
+    internCount:20,goodCount:14,riskCount:6,
+    weekPhase:'第3周·独立承担期',heroTime:'12天',
+    // 李明在本批次带教的实习生（按导师账号过滤）
+    myInterns:[
+      {id:'chenchen',name:'陈晨',avCls:'av-b',dept:'研发岗',progress:68,score:86,status:'good',badge:'b-gr',statusTxt:'正常',tasks:'4/6'},
+      {id:'wanghao',name:'王浩',avCls:'av-am',dept:'研发岗',progress:41,score:61,status:'risk',badge:'b-am',statusTxt:'需跟进',tasks:'2/6'}
+    ],
+    myGoodCount:1,myRiskCount:1,myNextCheckin:'周三',
+    aiTip:'王浩本周完成率33%，卡点在独立开发模块。建议：① 拆解大任务；② 每日5min站会；③ 安排结对编程。',
+    deptRates:[{dept:'研发部',n:8,rate:78,color:'var(--b500)'},{dept:'产品部',n:7,rate:71,color:'var(--gr500)'},{dept:'销售部',n:5,rate:65,color:'var(--am500)'}]
+  },
+  '2025autumn':{
+    name:'2025届秋季实习',week:'第1周/共8周',
+    internCount:15,goodCount:13,riskCount:2,
+    weekPhase:'第1周·入职融入期',heroTime:'7周',
+    // 李明在秋季批次带教的研发岗实习生（新批次，不同学员）
+    myInterns:[
+      {id:'zhaolei',name:'赵磊',avCls:'av-b',dept:'研发岗',progress:92,score:88,status:'good',badge:'b-gr',statusTxt:'优秀',tasks:'5/5'},
+      {id:'wukai',name:'吴凯',avCls:'av-gr',dept:'研发岗',progress:85,score:84,status:'good',badge:'b-gr',statusTxt:'良好',tasks:'5/5'},
+      {id:'xuman',name:'徐曼',avCls:'av-am',dept:'研发岗',progress:70,score:71,status:'good',badge:'b-b',statusTxt:'正常',tasks:'4/5'}
+    ],
+    myGoodCount:3,myRiskCount:0,myNextCheckin:'周四',
+    aiTip:'秋季批次第1周整体融入顺利，3名研发岗实习生均已完成环境配置。重点关注本周技术文档阅读的深度，建议组织一次架构介绍会。',
+    deptRates:[{dept:'研发部',n:5,rate:88,color:'var(--b500)'},{dept:'产品部',n:6,rate:84,color:'var(--gr500)'},{dept:'运营部',n:4,rate:79,color:'#6B4FFF'}]
+  }
+}
+function getCurBatchData(){
+  const id=lsGet('v5_curBatch','2025summer')
+  return BATCH_DATA[id]||BATCH_DATA['2025summer']
+}
+
+const DEFAULT_BATCHES=[
+  {id:'2025summer',name:'2025届夏季实习',week:'第3周/共4周',interns:[],mentors:[]},
+  {id:'2025autumn',name:'2025届秋季实习',week:'第1周/共8周',interns:[],mentors:[]}
+]
+function getBatches(){return lsGet('v5_batches',DEFAULT_BATCHES)}
+function saveBatches(b){lsSet('v5_batches',b)}
+let curBatchId=lsGet('v5_curBatch','2025summer')
+
+/* ── Reports (shared, visible to both mentor and HR) ── */
+const DEFAULT_REPORTS=[
+  {id:'r001',mentorId:'liming',mentorName:'李明',dept:'研发部',date:'2025-06-01',week:'第3周',title:'第3周带教周报',content:'本周完成两名实习生目标对齐。陈晨进展顺利，完成用户中心模块约65%；王浩进度落后，已安排专项辅导并拆解后续任务。建议HR关注王浩状态，考虑安排三方约谈。'},
+  {id:'r002',mentorId:'liming',mentorName:'李明',dept:'研发部',date:'2025-05-25',week:'第2周',title:'第2周带教周报',content:'第二周两名实习生均完成业务理解阶段目标。陈晨Bug Fix质量超预期；王浩完成率偏低，需持续关注。'},
+  {id:'r003',mentorId:'liming',mentorName:'李明',dept:'研发部',date:'2025-05-18',week:'第1周',title:'第1周带教周报',content:'第一周入职融入顺利，两名实习生均完成基础配置，参加了Kick-off会议，对业务有初步了解。'}
+]
+function getReports(){return lsGet('v5_reports',DEFAULT_REPORTS)}
+function saveReports(r){lsSet('v5_reports',r)}
+
+/* ── Chat histories (per user pair, persisted) ── */
+function chatKey(a,b){return 'v5_chat_'+[a,b].sort().join('_')}
+function getChat(a,b){return lsGet(chatKey(a,b),[])}
+function saveChat(a,b,msgs){lsSet(chatKey(a,b),msgs)}
+
+/* ── AI history per user ── */
+function aiKey(user){return 'v5_ai_'+user}
+function getAIHist(user){return lsGet(aiKey(user),[])}
+function saveAIHist(user,msgs){lsSet(aiKey(user),msgs.slice(-60))}
+
+/* ── Contacts per role ── */
+const CONTACTS={
+  intern:[{id:'liming',name:'李明',role:'导师',avCls:'av-gr'},{id:'hrAdmin',name:'HR管理员',role:'HR',avCls:'av-b'},{id:'group_intern_liming_hr',name:'三方群聊',role:'陈晨+李明+HR',avCls:'av-b',isGroup:true}],
+  mentor:[{id:'chenchen',name:'陈晨',role:'实习生',avCls:'av-b'},{id:'wanghao',name:'王浩',role:'实习生',avCls:'av-am'},{id:'hrAdmin',name:'HR管理员',role:'HR',avCls:'av-b'},{id:'group_intern_liming_hr',name:'三方群聊',role:'全员',avCls:'av-b',isGroup:true}],
+  hr:[{id:'liming',name:'李明',role:'导师',avCls:'av-gr'},{id:'zhaowei',name:'赵薇',role:'导师',avCls:'av-am'},{id:'chenchen',name:'陈晨',role:'实习生',avCls:'av-b'},{id:'group_intern_liming_hr',name:'三方群聊',role:'全员',avCls:'av-b',isGroup:true}]
+}
+
+/* Seed initial messages */
+function seedChats(){
+  const n=Date.now()
+  const seeds=[
+    {a:'chenchen',b:'liming',msgs:[{from:'liming',text:'陈晨你好，本周技术方案文档写得不错，继续保持！',t:n-3600000},{from:'chenchen',text:'谢谢李老师！我在用户中心模块遇到一个问题，方便请教吗？',t:n-3000000},{from:'liming',text:'当然，你说吧',t:n-2900000}]},
+    {a:'chenchen',b:'hrAdmin',msgs:[{from:'hrAdmin',text:'陈晨，第三周表现很棒，继续加油！如有任何问题随时联系。',t:n-86400000}]},
+    {a:'liming',b:'hrAdmin',msgs:[{from:'hrAdmin',text:'李明老师，王浩进度已触发风险预警，麻烦关注一下。',t:n-43200000},{from:'liming',text:'了解，已安排明天专项沟通，后续同步进展。',t:n-42000000}]},
+    {a:'wanghao',b:'liming',msgs:[{from:'liming',text:'王浩，本周进度比较落后，咱们明天下午专项沟通好吗？',t:n-7200000},{from:'wanghao',text:'好的导师，明天15点有时间',t:n-7000000}]},
+    {a:'group_intern_liming_hr',b:'__group__',msgs:[{from:'hrAdmin',text:'三方群通知：本周五15:00进行第三周成果汇报，请各位实习生提前准备。',t:n-172800000},{from:'liming',text:'好的，我提前和实习生沟通。',t:n-172000000}]}
+  ]
+  seeds.forEach(s=>{if(!localStorage.getItem(chatKey(s.a,s.b))){saveChat(s.a,s.b,s.msgs)}})
+}
+
+/* ══════════════════════════════════════
+   AUTH
+══════════════════════════════════════ */
+function selRole(r){
+  SEL=r
+  document.querySelectorAll('.rtab').forEach(t=>t.classList.remove('active'))
+  document.getElementById('rt-'+r).classList.add('active')
+}
+function doLogin(){
+  const u=document.getElementById('lu').value.trim(),p=document.getElementById('lp').value.trim()
+  const err=document.getElementById('lerr')
+  const acc=Object.values(ACCOUNTS).find(a=>a.role===SEL&&a.user===u&&a.pass===p)
+  if(!acc){err.style.display='block';return}
+  err.style.display='none'; CUR=acc
+  seedChats()
+  document.getElementById('login-screen').style.display='none'
+  document.getElementById('app').style.display='flex'
+  buildNav(acc.tabs)
+  const av=document.getElementById('uav'); av.className='uav '+acc.avCls; av.textContent=acc.name[0]
+  document.getElementById('uname').textContent=acc.name
+  // batch selector only for mentor/hr
+  document.getElementById('batch-wrap').style.display=(acc.role==='mentor'||acc.role==='hr')?'block':'none'
+  document.getElementById('nb-msg').style.display='flex'
+  loadBatch()
+  loadAI()
+  updateMsgDot()
+  switchTab(acc.tabs[0])
+}
+function logout(){
+  if(CUR)saveAIHist(CUR.user,collectAIMsgs())
+  CUR=null
+  document.getElementById('app').style.display='none'
+  document.getElementById('login-screen').style.display='flex'
+  document.getElementById('lu').value=''; document.getElementById('lp').value=''
+}
+function buildNav(tabs){
+  const nav=document.getElementById('mnav'); nav.innerHTML=''
+  tabs.forEach(t=>{
+    const b=document.createElement('button'); b.className='nb'; b.id='nb-'+t
+    b.innerHTML=`<i class="ti ${TAB_CFG[t].icon}"></i>${TAB_CFG[t].lbl}`
+    b.onclick=()=>switchTab(t); nav.appendChild(b)
+  })
+}
+function switchTab(r){
+  document.querySelectorAll('.nb').forEach(b=>b.classList.toggle('active',b.id==='nb-'+r))
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'))
+  const p=document.getElementById('p-'+r); if(p)p.classList.add('active')
+  if(r==='msg')renderContacts()
+}
+
+/* ══════════════════════════════════════
+   BATCH SELECTOR
+══════════════════════════════════════ */
+function loadBatch(){
+  const batches=getBatches()
+  const cur=batches.find(b=>b.id===curBatchId)||batches[0]
+  document.getElementById('batch-label').textContent=cur?cur.name:'未知批次'
+  document.getElementById('week-label').textContent=cur?cur.week:'—'
+}
+function toggleBatch(e){
+  e.stopPropagation()
+  const dd=document.getElementById('batch-dd')
+  dd.classList.toggle('open')
+  if(dd.classList.contains('open'))renderBatchDD()
+}
+document.addEventListener('click',()=>document.getElementById('batch-dd')?.classList.remove('open'))
+function renderBatchDD(){
+  const batches=getBatches()
+  const dd=document.getElementById('batch-dd'); dd.innerHTML=''
+  batches.forEach(b=>{
+    const d=document.createElement('div')
+    d.className='bdd-item'+(b.id===curBatchId?' active':'')
+    d.innerHTML=`<i class="ti ti-calendar-event"></i>${b.name}`
+    d.onclick=e=>{e.stopPropagation();selectBatch(b.id)}
+    dd.appendChild(d)
+  })
+  const sep=document.createElement('div'); sep.className='bdd-sep'; dd.appendChild(sep)
+  const add=document.createElement('div')
+  add.className='bdd-item bdd-add'
+  add.innerHTML=`<i class="ti ti-plus"></i>添加新批次`
+  add.onclick=e=>{e.stopPropagation();openAddBatch()}
+  dd.appendChild(add)
+}
+function selectBatch(id){
+  curBatchId=id; lsSet('v5_curBatch',id)
+  loadBatch()
+  refreshBatchUI()
+  document.getElementById('batch-dd').classList.remove('open')
+  const bd=BATCH_DATA[id]
+  showToast('已切换到：'+(bd?bd.name:id))
+}
+function refreshBatchUI(){
+  const bd=getCurBatchData()
+  if(!bd)return
+
+  /* ── HR panel: update batch-wide stats ── */
+  const hrHero=document.querySelector('#p-hr .hinfo .hmeta')
+  if(hrHero)hrHero.innerHTML=`<div class="hmi"><i class="ti ti-users"></i>共${bd.internCount}人</div><div class="hmi"><i class="ti ti-calendar"></i>${bd.weekPhase}</div>`
+  const hrCards=document.querySelectorAll('#p-hr .sgrid .scard .sv')
+  if(hrCards.length>=3){hrCards[0].textContent=bd.internCount;hrCards[1].textContent=bd.goodCount;hrCards[2].textContent=bd.riskCount}
+  const hrDeptFirst=document.querySelector('#p-hr .tc .dbar')
+  if(hrDeptFirst&&hrDeptFirst.closest('.card')){
+    hrDeptFirst.closest('.card').innerHTML=bd.deptRates.map((d,i)=>`<div class="dbar"${i===bd.deptRates.length-1?' style="margin-bottom:0"':''}><div class="dbhd" onclick="openDeptModal('${['rd','pm','sales','ops'][i]}')"><span style="font-size:13px;font-weight:600">${d.dept} <span style="font-weight:400;color:var(--g400)">(${d.n}人)</span></span><span style="display:flex;align-items:center;gap:5px"><span style="font-size:13px;font-weight:700;color:${d.color}">${d.rate}%</span><i class="ti ti-chevron-right" style="font-size:13px;color:var(--g400)"></i></span></div><div class="dbt"><div class="dbf" style="width:${d.rate}%;background:${d.color}"></div></div></div>`).join('')
+  }
+
+  /* ── Mentor panel: identity always = current login user, never changes ── */
+  if(!CUR||CUR.role!=='mentor')return
+  // Hero name/dept stays as the logged-in mentor's own info
+  const mentorHero=document.querySelector('#p-mentor .hinfo')
+  if(mentorHero){
+    mentorHero.innerHTML=`<div class="hname">${CUR.name} <span class="bdg b-wh" style="margin-left:6px;font-size:11px">导师</span></div>
+      <div class="hmeta">
+        <div class="hmi"><i class="ti ti-building"></i>研发部高级工程师</div>
+        <div class="hmi"><i class="ti ti-users"></i>带教${bd.myInterns.length}名实习生 · ${bd.name}</div>
+      </div>`
+  }
+  const mentorHAv=document.querySelector('#p-mentor .hav')
+  if(mentorHAv)mentorHAv.textContent=CUR.name[0]
+  // Check-in day may differ per batch
+  const mentorHStat=document.querySelector('#p-mentor .hstat')
+  if(mentorHStat)mentorHStat.innerHTML=`<div class="hsnum" style="font-size:22px">${bd.myNextCheckin}</div><div class="hslbl">下次Check-in</div>`
+  // Stat cards: counts from THIS mentor's slice of this batch
+  const mCards=document.querySelectorAll('#p-mentor .sgrid .scard .sv')
+  if(mCards.length>=3){mCards[0].textContent=bd.myInterns.length;mCards[1].textContent=bd.myGoodCount;mCards[2].textContent=bd.myRiskCount}
+  // Intern rows
+  const mentorInternCard=document.querySelector('#p-mentor .tc .card')
+  if(mentorInternCard){
+    mentorInternCard.innerHTML=bd.myInterns.map((intern,i)=>`
+      <div class="irow" onclick="openInternModal('${intern.id}')" ${i===bd.myInterns.length-1?'style="border-bottom:none"':''}>
+        <div class="av ${intern.avCls}" style="width:40px;height:40px;font-size:14px">${intern.name[0]}</div>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:600">${intern.name}</div>
+          <div style="font-size:11px;color:var(--g400);margin-top:2px">${intern.dept} · ${bd.weekPhase} · 进度${intern.progress}%</div>
+          <div style="margin-top:5px;display:flex;gap:4px">
+            <span class="bdg ${intern.badge}"><i class="ti ti-trending-up" style="font-size:10px"></i>${intern.statusTxt}</span>
+            <span class="bdg b-b">${intern.tasks}</span>
+          </div>
+        </div>
+        <div style="text-align:center"><div class="snum ${intern.score>=80?'shi':intern.score>=70?'smi':'slo'}">${intern.score}</div><div style="font-size:11px;color:var(--g400)">适岗分</div></div>
+        <i class="ti ti-chevron-right" style="color:var(--g400);font-size:15px"></i>
+      </div>`).join('')
+  }
+  // AI tip
+  const aiTipEl=document.querySelector('#p-mentor .aitip div')
+  if(aiTipEl)aiTipEl.textContent=bd.aiTip
+}
+function openAddBatch(){
+  document.getElementById('batch-dd').classList.remove('open')
+  openM('添加新实习批次',`
+    <div class="fg"><label class="fl">批次名称 <span style="color:var(--r500)">*</span></label><input class="fi" id="nb-name" placeholder="例：2025届秋季实习"></div>
+    <div class="fg"><label class="fl">实习周期</label><input class="fi" id="nb-week" placeholder="例：第1周/共8周"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:13px">
+      <div><label class="fl">开始日期</label><input class="fi" id="nb-start" type="date"></div>
+      <div><label class="fl">结束日期</label><input class="fi" id="nb-end" type="date"></div>
+    </div>
+    <div class="fg"><label class="fl">实习生名单（每行一个姓名，或上传 Excel/CSV）</label><textarea class="fi" id="nb-interns" rows="4" placeholder="陈晨\n王浩\n张雨…"></textarea></div>
+    <div class="fg"><label class="fl">导师名单（每行一个姓名）</label><textarea class="fi" id="nb-mentors" rows="3" placeholder="李明\n赵薇\n孙磊…"></textarea></div>
+    <div class="fg">
+      <label class="fl">导入文件（支持 .xlsx / .csv / .txt）</label>
+      <input type="file" id="nb-file" accept=".xlsx,.csv,.txt" onchange="handleBatchFile(this)" style="font-size:13px;color:var(--g600);padding:8px 0">
+      <div style="font-size:11.5px;color:var(--g400);margin-top:4px">上传后自动填入名单，格式：每行一个姓名；或CSV两列（姓名,角色）</div>
+    </div>
+  `,[{lbl:'取消',cls:'sec',fn:'closeM()'},{lbl:'创建批次',cls:'pri',fn:'saveNewBatch()'}])
+}
+function handleBatchFile(inp){
+  const f=inp.files[0]; if(!f)return
+  const reader=new FileReader()
+  reader.onload=e=>{
+    const text=e.target.result
+    const lines=text.split(/[\r\n]+/).map(l=>l.trim()).filter(Boolean)
+    const interns=[],mentors=[]
+    lines.forEach(l=>{
+      const parts=l.split(',')
+      if(parts.length>=2){
+        const name=parts[0].trim(),role=parts[1].trim()
+        if(role.includes('导师'))mentors.push(name); else interns.push(name)
+      }else interns.push(l)
+    })
+    if(interns.length){const el=document.getElementById('nb-interns');if(el)el.value=interns.join('\n')}
+    if(mentors.length){const el=document.getElementById('nb-mentors');if(el)el.value=mentors.join('\n')}
+    showToast(`已解析：${interns.length}名实习生，${mentors.length}名导师`)
+  }
+  reader.readAsText(f,'UTF-8')
+}
+function saveNewBatch(){
+  const name=(document.getElementById('nb-name').value||'').trim()
+  if(!name){showToast('请填写批次名称');return}
+  const week=(document.getElementById('nb-week').value||'').trim()||'第1周/共8周'
+  const internTxt=(document.getElementById('nb-interns').value||'').trim()
+  const mentorTxt=(document.getElementById('nb-mentors').value||'').trim()
+  const interns=internTxt?internTxt.split('\n').map(s=>s.trim()).filter(Boolean):[]
+  const mentors=mentorTxt?mentorTxt.split('\n').map(s=>s.trim()).filter(Boolean):[]
+  const id='batch_'+Date.now()
+  const batches=getBatches()
+  batches.push({id,name,week,interns,mentors,createdAt:new Date().toLocaleDateString('zh-CN')})
+  saveBatches(batches); closeM()
+  selectBatch(id)
+  showToast(`批次「${name}」已创建，包含${interns.length}名实习生、${mentors.length}名导师 ✓`)
+}
+
+/* ══════════════════════════════════════
+   TASKS
+══════════════════════════════════════ */
+function ckTask(cb,cid){cb.closest('.trow').classList.toggle('done',cb.checked);if(cid==='itasks')updItaskCount()}
+function updItaskCount(){const all=document.querySelectorAll('#itasks .tchk');const done=[...all].filter(c=>c.checked).length;document.getElementById('itaskc').textContent=done+'/'+all.length}
+function addTask(cid,iid){
+  const inp=document.getElementById(iid);const val=inp.value.trim();if(!val)return
+  const row=document.createElement('div');row.className='trow'
+  row.innerHTML=`<input type="checkbox" class="tchk" onchange="ckTask(this,'${cid}')"><div class="tinfo"><div class="tname">${esc(val)}</div><div class="tmeta">手动添加</div></div><div class="tprog"><div class="tpf" style="width:0%"></div></div><div class="tacts"><button class="ticn ed" onclick="editTask(this)"><i class="ti ti-edit"></i></button><button class="ticn dl" onclick="delTask(this)"><i class="ti ti-trash"></i></button></div>`
+  document.getElementById(cid).appendChild(row);inp.value='';if(cid==='itasks')updItaskCount();showToast('任务已添加 ✓')
+}
+function editTask(btn){
+  const el=btn.closest('.trow').querySelector('.tname');const orig=el.textContent
+  el.contentEditable='true';el.focus()
+  el.style.outline='none';el.style.borderBottom='1.5px solid var(--b500)'
+  const done=()=>{el.contentEditable='false';el.style.borderBottom='';if(el.textContent.trim())showToast('已更新 ✓');else el.textContent=orig;el.removeEventListener('blur',done);el.removeEventListener('keydown',kd)}
+  const kd=e=>{if(e.key==='Enter'){e.preventDefault();el.blur()}}
+  el.addEventListener('blur',done);el.addEventListener('keydown',kd)
+}
+function delTask(btn){if(!confirm('确认删除该任务？'))return;const cid=btn.closest('[id$=tasks]')?.id;btn.closest('.trow').remove();if(cid==='itasks')updItaskCount();showToast('已删除')}
+
+/* ══════════════════════════════════════
+   MODAL
+══════════════════════════════════════ */
+function openM(title,body,btns){
+  document.getElementById('mo-title').textContent=title
+  document.getElementById('mo-body').innerHTML=body
+  const ft=document.getElementById('mo-foot')
+  if(btns&&btns.length){ft.classList.remove('hidden');ft.innerHTML=btns.map(b=>`<button class="mbtn ${b.cls}" onclick="${b.fn}">${b.lbl}</button>`).join('')}
+  else ft.classList.add('hidden')
+  document.getElementById('mo').classList.remove('hidden')
+}
+function closeM(){document.getElementById('mo').classList.add('hidden')}
+document.addEventListener('click',e=>{if(e.target===document.getElementById('mo'))closeM()})
+function mTab(el,tid){
+  el.closest('.mtabs').querySelectorAll('.mti').forEach(t=>t.classList.remove('active'));el.classList.add('active')
+  document.getElementById('mo-body').querySelectorAll('.mtp').forEach(p=>p.classList.remove('active'))
+  document.getElementById('mo-body').querySelector('#'+tid)?.classList.add('active')
+}
+
+/* ══════════════════════════════════════
+   REPORT MODAL (Req 1 & 2)
+══════════════════════════════════════ */
+function openReportModal(){
+  // mentor view: can add, edit, delete
+  renderReportModal('mentor')
+}
+function openHRReportModal(mentorId){
+  // hr view: read-only list + view each report
+  const mentorMap={liming:'李明（研发部）',zhaowei:'赵薇（产品部）',sunlei:'孙磊（销售部）'}
+  const reports=getReports().filter(r=>r.mentorId===mentorId)
+  const mname=mentorMap[mentorId]||mentorId
+  if(!reports.length){openM(`${mname} · 周报记录`,`<div style="color:var(--g400);font-size:13px;padding:20px 0;text-align:center"><i class="ti ti-file-off" style="font-size:28px;display:block;margin-bottom:8px"></i>该导师暂未提交周报</div>`);return}
+  const listHtml=reports.map(r=>`
+    <div class="rpt-item" onclick="viewReport('${r.id}')">
+      <div style="width:40px;height:40px;background:var(--b50);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--b500);flex-shrink:0"><i class="ti ti-file-text"></i></div>
+      <div class="rpt-item-info">
+        <div class="rpt-item-title">${r.title}</div>
+        <div class="rpt-item-meta">${r.mentorName} · ${r.week} · ${r.date}</div>
+      </div>
+      <span class="bdg b-gr"><i class="ti ti-check"></i>已提交</span>
+      <i class="ti ti-chevron-right" style="color:var(--g400);font-size:14px"></i>
+    </div>`).join('')
+  openM(`${mname} · 历史周报（${reports.length}份）`,`<div style="font-size:12px;color:var(--g400);margin-bottom:12px">点击任意周报查看完整内容</div>${listHtml}`)
+}
+function viewReport(id){
+  const r=getReports().find(x=>x.id===id); if(!r)return
+  openM(r.title,`
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+      <span class="bdg b-b">${r.week}</span>
+      <span style="font-size:12px;color:var(--g400)">${r.mentorName} · ${r.dept} · 提交于 ${r.date}</span>
+    </div>
+    <div style="background:var(--g50);border-radius:10px;padding:16px;font-size:13.5px;line-height:1.85;color:var(--g800);white-space:pre-wrap">${r.content}</div>
+  `,[{lbl:'关闭',cls:'sec',fn:'closeM()'}])
+}
+function renderReportModal(){
+  const reports=getReports().filter(r=>r.mentorId==='liming')
+  setTimeout(()=>{const el=document.getElementById('rpt-count');if(el)el.textContent=reports.length},50)
+  const wkOpts=['第1周','第2周','第3周','第4周','第5周','第6周','第7周','第8周'].map((w,i)=>`<option${i===2?' selected':''}>${w}</option>`).join('')
+  const listHtml=reports.length?reports.map(r=>`
+    <div class="rpt-item">
+      <div style="width:38px;height:38px;background:${r.isUpload?'var(--gr50)':'var(--b50)'};border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;color:${r.isUpload?'var(--gr500)':'var(--b500)'};flex-shrink:0"><i class="ti ${r.isUpload?'ti-file-upload':'ti-file-text'}"></i></div>
+      <div class="rpt-item-info" onclick="viewReport('${r.id}')" style="cursor:pointer;flex:1">
+        <div class="rpt-item-title">${r.title}</div>
+        <div class="rpt-item-meta">${r.week} · ${r.date}${r.isUpload?' · 附件文档':''}</div>
+      </div>
+      <div class="rpt-item-acts">
+        <button class="ticn ed" onclick="editReport('${r.id}')" title="编辑"><i class="ti ti-edit"></i></button>
+        <button class="ticn dl" onclick="deleteReport('${r.id}')" title="删除"><i class="ti ti-trash"></i></button>
+      </div>
+    </div>`).join(''):`<div style="color:var(--g400);font-size:13px;padding:24px 0;text-align:center"><i class="ti ti-file-off" style="font-size:28px;display:block;margin-bottom:8px;color:var(--g300)"></i>暂无周报记录</div>`
+  openM('带教周报管理 · 李明',`
+    <div class="mtabs">
+      <div class="mti active" onclick="mTab(this,'rp-list')">历史记录（${reports.length}份）</div>
+      <div class="mti" onclick="mTab(this,'rp-new')">在线填写</div>
+      <div class="mti" onclick="mTab(this,'rp-upload')">上传文档</div>
+    </div>
+    <div id="rp-list" class="mtp active">${listHtml}</div>
+    <div id="rp-new" class="mtp">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:13px">
+        <div><label class="fl">周报标题 <span style="color:var(--r500)">*</span></label><input class="fi" id="rp-title" placeholder="例：第3周带教周报"></div>
+        <div><label class="fl">所属周次</label><select class="fi" id="rp-week">${wkOpts}</select></div>
+      </div>
+      <div class="fg"><label class="fl">本周亮点</label><textarea class="fi" id="rp-highlight" rows="2" placeholder="实习生突出表现、完成的重要里程碑…"></textarea></div>
+      <div class="fg"><label class="fl">挑战与问题</label><textarea class="fi" id="rp-issue" rows="2" placeholder="遇到的困难、需HR支持的事项…"></textarea></div>
+      <div class="fg"><label class="fl">下周计划</label><textarea class="fi" id="rp-plan" rows="2" placeholder="下周带教重点、任务安排…"></textarea></div>
+      <div class="fg"><label class="fl">实习生综合评价（选填）</label><textarea class="fi" id="rp-eval" rows="2" placeholder="本周实习生综合评分和评语…"></textarea></div>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button class="mbtn sec" onclick="previewReport()"><i class="ti ti-eye" style="font-size:13px;margin-right:4px"></i>预览</button>
+        <button class="mbtn pri" onclick="submitReport()" style="flex:1"><i class="ti ti-send" style="font-size:13px;margin-right:4px"></i>提交给HR</button>
+      </div>
+    </div>
+    <div id="rp-upload" class="mtp">
+      <div style="border:2px dashed var(--g200);border-radius:12px;padding:28px;text-align:center;margin-bottom:14px;transition:all .15s" id="drop-zone" ondragover="event.preventDefault();this.style.borderColor='var(--b500)';this.style.background='var(--b50)'" ondragleave="this.style.borderColor='var(--g200)';this.style.background=''" ondrop="handleReportDrop(event)">
+        <i class="ti ti-cloud-upload" style="font-size:36px;color:var(--g300);display:block;margin-bottom:10px"></i>
+        <div style="font-size:13.5px;font-weight:600;color:var(--g600);margin-bottom:5px">拖拽文件到此处，或点击选择文件</div>
+        <div style="font-size:12px;color:var(--g400);margin-bottom:14px">支持 .pdf / .doc / .docx / .txt，最大 20MB</div>
+        <input type="file" id="rp-file" accept=".pdf,.doc,.docx,.txt" style="display:none" onchange="handleReportFile(this)">
+        <button class="mbtn sec" onclick="document.getElementById('rp-file').click()"><i class="ti ti-upload" style="font-size:13px;margin-right:4px"></i>选择文件</button>
+      </div>
+      <div id="rp-file-preview" style="display:none;padding:12px;background:var(--gr50);border:1px solid var(--gr100);border-radius:10px;margin-bottom:14px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <i class="ti ti-file-check" style="font-size:22px;color:var(--gr500)"></i>
+          <div style="flex:1"><div id="rp-fname" style="font-size:13px;font-weight:600;color:var(--gr700)"></div><div id="rp-fsize" style="font-size:11.5px;color:var(--gr600);margin-top:1px"></div></div>
+          <button class="ticn dl" onclick="clearReportFile()"><i class="ti ti-x"></i></button>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:13px">
+        <div><label class="fl">周报标题 <span style="color:var(--r500)">*</span></label><input class="fi" id="rp-u-title" placeholder="例：第3周带教周报"></div>
+        <div><label class="fl">所属周次</label><select class="fi" id="rp-u-week">${wkOpts}</select></div>
+      </div>
+      <div class="fg"><label class="fl">补充说明（选填）</label><textarea class="fi" id="rp-u-note" rows="2" placeholder="对文档内容的补充…"></textarea></div>
+      <button class="mbtn pri" onclick="submitUploadReport()" style="width:100%;margin-top:4px"><i class="ti ti-send" style="font-size:13px;margin-right:4px"></i>提交给HR</button>
+    </div>
+  `)
+}
+let pendingReportFile=null
+function handleReportFile(inp){
+  const f=inp.files?.[0];if(!f)return;pendingReportFile=f
+  document.getElementById('rp-file-preview').style.display='block'
+  document.getElementById('rp-fname').textContent=f.name
+  document.getElementById('rp-fsize').textContent=(f.size/1024).toFixed(1)+' KB'
+  document.getElementById('drop-zone').style.display='none'
+}
+function handleReportDrop(e){
+  e.preventDefault();const f=e.dataTransfer.files?.[0];if(!f)return
+  const inp=document.getElementById('rp-file');const dt=new DataTransfer();dt.items.add(f);inp.files=dt.files
+  handleReportFile(inp);e.currentTarget.style.borderColor='var(--g200)';e.currentTarget.style.background=''
+}
+function clearReportFile(){
+  pendingReportFile=null
+  document.getElementById('rp-file-preview').style.display='none'
+  document.getElementById('drop-zone').style.display='block'
+  document.getElementById('rp-file').value=''
+}
+function buildReportContent(h,iss,p,ev){
+  let c='';if(h)c+='【本周亮点】\n'+h+'\n\n';if(iss)c+='【挑战与问题】\n'+iss+'\n\n';if(p)c+='【下周计划】\n'+p+'\n\n';if(ev)c+='【实习生综合评价】\n'+ev;return c.trim()
+}
+function previewReport(){
+  const t=(document.getElementById('rp-title')?.value||'').trim()
+  if(!t){showToast('请先填写周报标题');return}
+  const h=document.getElementById('rp-highlight')?.value||'',iss=document.getElementById('rp-issue')?.value||'',p=document.getElementById('rp-plan')?.value||'',ev=document.getElementById('rp-eval')?.value||'',w=document.getElementById('rp-week')?.value||'第3周'
+  const content=buildReportContent(h,iss,p,ev)
+  window._pData={t,w,content}
+  openM('预览：'+t,`<div style="background:var(--g50);border-radius:10px;padding:16px;font-size:13.5px;line-height:1.85;color:var(--g800);white-space:pre-wrap">${esc(content)}</div>`,
+    [{lbl:'返回编辑',cls:'sec',fn:'renderReportModal()'},{lbl:'确认提交给HR',cls:'pri',fn:'confirmPreviewSubmit()'}])
+}
+function confirmPreviewSubmit(){
+  const d=window._pData||{};saveReportItem(d.t,d.w,d.content,false);closeM();showToast('周报已提交给HR ✓');refreshRptCard()
+}
+function submitReport(){
+  const t=(document.getElementById('rp-title')?.value||'').trim()
+  const w=document.getElementById('rp-week')?.value||'第3周'
+  const h=document.getElementById('rp-highlight')?.value||'',iss=document.getElementById('rp-issue')?.value||'',p=document.getElementById('rp-plan')?.value||'',ev=document.getElementById('rp-eval')?.value||''
+  if(!t){showToast('请填写周报标题');return}
+  const content=buildReportContent(h,iss,p,ev)
+  if(!content){showToast('请至少填写一项内容');return}
+  saveReportItem(t,w,content,false);closeM();showToast('周报已提交给HR ✓');refreshRptCard()
+}
+function submitUploadReport(){
+  const t=(document.getElementById('rp-u-title')?.value||'').trim()
+  const w=document.getElementById('rp-u-week')?.value||'第3周'
+  const note=document.getElementById('rp-u-note')?.value||''
+  if(!t){showToast('请填写周报标题');return}
+  if(!pendingReportFile){showToast('请先选择要上传的文件');return}
+  const content='【上传附件】'+pendingReportFile.name+(note?'\n\n补充说明：'+note:'')
+  saveReportItem(t,w,content,true,pendingReportFile.name);pendingReportFile=null;closeM();showToast('文档已上传并提交给HR ✓');refreshRptCard()
+}
+function saveReportItem(t,w,content,isUpload,fileName){
+  const rpts=getReports()
+  rpts.unshift({id:'r'+Date.now(),mentorId:'liming',mentorName:'李明',dept:'研发部',date:new Date().toLocaleDateString('zh-CN'),week:w,title:t,content,isUpload:!!isUpload,fileName:fileName||''})
+  saveReports(rpts)
+}
+function refreshRptCard(){
+  const cnt=getReports().filter(r=>r.mentorId==='liming').length
+  const el=document.getElementById('rpt-count');if(el)el.textContent=cnt
+  const st=document.getElementById('rpt-status');if(st){st.textContent='已提交';st.style.color='var(--gr700)'}
+}
+
+/* ══════════════════════════════════════
+   INTERN WEEKLY REPORT
+══════════════════════════════════════ */
+function getInternReports(){return lsGet('v5_intern_reports',[
+  {id:'ir001',internId:'chenchen',internName:'陈晨',date:'2025-05-25',week:'第2周',title:'第2周工作周报',content:'【本周工作内容】\n深入学习系统微服务架构，完成第一个Bug Fix（用户登录接口超时）。参与了两次Code Review，完成缓存方案调研报告。\n\n【收获与成长】\n对系统架构的理解更深入，学会了使用性能分析工具排查问题。\n\n【遇到的困难】\n在调研缓存方案时对Redis Cluster的选主机制理解不到位，在导师指导后已搞清楚。\n\n【下周计划】\n开始负责用户中心模块的重构工作。',isUpload:false},
+  {id:'ir002',internId:'chenchen',internName:'陈晨',date:'2025-05-18',week:'第1周',title:'第1周工作周报',content:'【本周工作内容】\n完成入职手续，配置好开发环境，参加了Kick-off启动会议。\n\n【收获与成长】\n了解了团队的工作方式和业务背景，对后续4周的实习目标有了清晰认识。\n\n【遇到的困难】\n工具链较多，花了一些时间摸索。\n\n【下周计划】\n深入阅读技术文档，尝试独立解决一个Bug。',isUpload:false}
+])}
+function saveInternReports(r){lsSet('v5_intern_reports',r)}
+
+function refreshInternRptCard(){
+  const cnt=getInternReports().filter(r=>r.internId==='chenchen').length
+  const el=document.getElementById('irpt-count');if(el)el.textContent=cnt
+  const st=document.getElementById('irpt-status');if(st){st.textContent='已提交';st.style.color='var(--gr700)'}
+}
+
+function openInternReportModal(){
+  const reports=getInternReports().filter(r=>r.internId==='chenchen')
+  setTimeout(()=>{const el=document.getElementById('irpt-count');if(el)el.textContent=reports.length},50)
+  const wkOpts=['第1周','第2周','第3周','第4周','第5周','第6周','第7周','第8周'].map((w,i)=>`<option${i===2?' selected':''}>` +w+'</option>').join('')
+  const listHtml=reports.length?reports.map(r=>`
+    <div class="rpt-item">
+      <div style="width:38px;height:38px;background:${r.isUpload?'var(--gr50)':'var(--b50)'};border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;color:${r.isUpload?'var(--gr500)':'var(--b500)'};flex-shrink:0"><i class="ti ${r.isUpload?'ti-file-upload':'ti-file-text'}"></i></div>
+      <div class="rpt-item-info" onclick="viewInternReport('${r.id}')" style="cursor:pointer;flex:1">
+        <div class="rpt-item-title">${r.title}</div>
+        <div class="rpt-item-meta">${r.week} · ${r.date}${r.isUpload?' · 附件文档':''}</div>
+      </div>
+      <div class="rpt-item-acts">
+        <button class="ticn ed" onclick="editInternReport('${r.id}')" title="编辑"><i class="ti ti-edit"></i></button>
+        <button class="ticn dl" onclick="deleteInternReport('${r.id}')" title="删除"><i class="ti ti-trash"></i></button>
+      </div>
+    </div>`).join(''):`<div style="color:var(--g400);font-size:13px;padding:24px 0;text-align:center"><i class="ti ti-file-off" style="font-size:28px;display:block;margin-bottom:8px;color:var(--g300)"></i>暂无周报，点击「在线填写」开始提交</div>`
+  openM('工作周报管理 · 陈晨',`
+    <div class="mtabs">
+      <div class="mti active" onclick="mTab(this,'ir-list')">历史记录（${reports.length}份）</div>
+      <div class="mti" onclick="mTab(this,'ir-new')">在线填写</div>
+      <div class="mti" onclick="mTab(this,'ir-upload')">上传文档</div>
+    </div>
+
+    <div id="ir-list" class="mtp active">${listHtml}</div>
+
+    <div id="ir-new" class="mtp">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:13px">
+        <div><label class="fl">周报标题 <span style="color:var(--r500)">*</span></label><input class="fi" id="ir-title" placeholder="例：第3周工作周报"></div>
+        <div><label class="fl">所属周次</label><select class="fi" id="ir-week">${wkOpts}</select></div>
+      </div>
+      <div class="fg"><label class="fl">本周工作内容</label><textarea class="fi" id="ir-work" rows="2" placeholder="完成了哪些任务、参与了哪些活动…"></textarea></div>
+      <div class="fg"><label class="fl">收获与成长</label><textarea class="fi" id="ir-gain" rows="2" placeholder="学到了什么、技能有哪些提升…"></textarea></div>
+      <div class="fg"><label class="fl">遇到的困难</label><textarea class="fi" id="ir-issue" rows="2" placeholder="遇到了什么问题、如何解决或寻求帮助…"></textarea></div>
+      <div class="fg"><label class="fl">下周计划</label><textarea class="fi" id="ir-plan" rows="2" placeholder="下周重点任务、希望导师给予的支持…"></textarea></div>
+      <div class="fg"><label class="fl">自评分数（1-10，选填）</label><input class="fi" id="ir-score" type="number" min="1" max="10" placeholder="7" style="width:100px"></div>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button class="mbtn sec" onclick="previewInternReport()"><i class="ti ti-eye" style="font-size:13px;margin-right:4px"></i>预览</button>
+        <button class="mbtn pri" onclick="submitInternReport()" style="flex:1"><i class="ti ti-send" style="font-size:13px;margin-right:4px"></i>提交给导师和HR</button>
+      </div>
+    </div>
+
+    <div id="ir-upload" class="mtp">
+      <div style="border:2px dashed var(--g200);border-radius:12px;padding:28px;text-align:center;margin-bottom:14px;transition:all .15s" id="ir-drop-zone"
+        ondragover="event.preventDefault();this.style.borderColor='var(--b500)';this.style.background='var(--b50)'"
+        ondragleave="this.style.borderColor='var(--g200)';this.style.background=''"
+        ondrop="handleInternReportDrop(event)">
+        <i class="ti ti-cloud-upload" style="font-size:36px;color:var(--g300);display:block;margin-bottom:10px"></i>
+        <div style="font-size:13.5px;font-weight:600;color:var(--g600);margin-bottom:5px">拖拽文件到此处，或点击选择文件</div>
+        <div style="font-size:12px;color:var(--g400);margin-bottom:14px">支持 .pdf / .doc / .docx / .txt，最大 20MB</div>
+        <input type="file" id="ir-file" accept=".pdf,.doc,.docx,.txt" style="display:none" onchange="handleInternReportFile(this)">
+        <button class="mbtn sec" onclick="document.getElementById('ir-file').click()"><i class="ti ti-upload" style="font-size:13px;margin-right:4px"></i>选择文件</button>
+      </div>
+      <div id="ir-file-preview" style="display:none;padding:12px;background:var(--gr50);border:1px solid var(--gr100);border-radius:10px;margin-bottom:14px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <i class="ti ti-file-check" style="font-size:22px;color:var(--gr500)"></i>
+          <div style="flex:1">
+            <div id="ir-fname" style="font-size:13px;font-weight:600;color:var(--gr700)"></div>
+            <div id="ir-fsize" style="font-size:11.5px;color:var(--gr600);margin-top:1px"></div>
+          </div>
+          <button class="ticn dl" onclick="clearInternReportFile()"><i class="ti ti-x"></i></button>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:13px">
+        <div><label class="fl">周报标题 <span style="color:var(--r500)">*</span></label><input class="fi" id="ir-u-title" placeholder="例：第3周工作周报"></div>
+        <div><label class="fl">所属周次</label><select class="fi" id="ir-u-week">${wkOpts}</select></div>
+      </div>
+      <div class="fg"><label class="fl">补充说明（选填）</label><textarea class="fi" id="ir-u-note" rows="2" placeholder="对文档内容的补充说明…"></textarea></div>
+      <button class="mbtn pri" onclick="submitInternUploadReport()" style="width:100%;margin-top:4px">
+        <i class="ti ti-send" style="font-size:13px;margin-right:4px"></i>提交给导师和HR
+      </button>
+    </div>
+  `)
+}
+
+function viewInternReport(id){
+  const r=getInternReports().find(x=>x.id===id);if(!r)return
+  openM(r.title,`
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+      <span class="bdg b-b">${r.week}</span>
+      <span style="font-size:12px;color:var(--g400)">${r.internName} · 提交于 ${r.date}</span>
+      ${r.isUpload?'<span class="bdg b-gr"><i class="ti ti-file-upload" style="font-size:11px"></i>附件文档</span>':''} 
+    </div>
+    <div style="background:var(--g50);border-radius:10px;padding:16px;font-size:13.5px;line-height:1.85;color:var(--g800);white-space:pre-wrap">${esc(r.content)}</div>
+  `,[{lbl:'关闭',cls:'sec',fn:'closeM()'}])
+}
+
+function editInternReport(id){
+  const rpts=getInternReports();const r=rpts.find(x=>x.id===id);if(!r)return
+  openM('编辑周报：'+r.title,`
+    <div class="fg"><label class="fl">标题</label><input class="fi" id="ier-title" value="${esc(r.title)}"></div>
+    <div class="fg"><label class="fl">内容</label><textarea class="fi" id="ier-content" rows="10">${esc(r.content)}</textarea></div>
+  `,[{lbl:'取消',cls:'sec',fn:'openInternReportModal()'},{lbl:'保存',cls:'pri',fn:`saveEditInternReport('${id}')`}])
+}
+
+function saveEditInternReport(id){
+  const rpts=getInternReports();const idx=rpts.findIndex(x=>x.id===id);if(idx<0)return
+  rpts[idx].title=(document.getElementById('ier-title')?.value||rpts[idx].title).trim()
+  rpts[idx].content=(document.getElementById('ier-content')?.value||rpts[idx].content).trim()
+  saveInternReports(rpts);closeM();showToast('周报已更新 ✓');openInternReportModal()
+}
+
+function deleteInternReport(id){
+  if(!confirm('确认删除该周报？'))return
+  saveInternReports(getInternReports().filter(r=>r.id!==id));closeM();showToast('已删除');openInternReportModal()
+}
+
+function buildInternReportContent(w,g,iss,p,sc){
+  let c=''
+  if(w)c+='【本周工作内容】\n'+w+'\n\n'
+  if(g)c+='【收获与成长】\n'+g+'\n\n'
+  if(iss)c+='【遇到的困难】\n'+iss+'\n\n'
+  if(p)c+='【下周计划】\n'+p+'\n\n'
+  if(sc)c+='【本周自评】'+sc+'/10'
+  return c.trim()
+}
+
+function previewInternReport(){
+  const t=(document.getElementById('ir-title')?.value||'').trim()
+  if(!t){showToast('请先填写周报标题');return}
+  const w=document.getElementById('ir-work')?.value||'',g=document.getElementById('ir-gain')?.value||'',iss=document.getElementById('ir-issue')?.value||'',p=document.getElementById('ir-plan')?.value||'',sc=document.getElementById('ir-score')?.value||'',wk=document.getElementById('ir-week')?.value||'第3周'
+  const content=buildInternReportContent(w,g,iss,p,sc)
+  window._irData={t,wk,content}
+  openM('预览：'+t,`<div style="background:var(--g50);border-radius:10px;padding:16px;font-size:13.5px;line-height:1.85;color:var(--g800);white-space:pre-wrap">${esc(content)}</div>`,
+    [{lbl:'返回编辑',cls:'sec',fn:'openInternReportModal()'},{lbl:'确认提交',cls:'pri',fn:'confirmInternPreview()'}])
+}
+
+function confirmInternPreview(){
+  const d=window._irData||{}
+  saveInternReportItem(d.t,d.wk,d.content,false)
+  closeM();showToast('周报已提交给导师和HR ✓');refreshInternRptCard()
+}
+
+function submitInternReport(){
+  const t=(document.getElementById('ir-title')?.value||'').trim()
+  if(!t){showToast('请填写周报标题');return}
+  const w=document.getElementById('ir-work')?.value||'',g=document.getElementById('ir-gain')?.value||'',iss=document.getElementById('ir-issue')?.value||'',p=document.getElementById('ir-plan')?.value||'',sc=document.getElementById('ir-score')?.value||'',wk=document.getElementById('ir-week')?.value||'第3周'
+  const content=buildInternReportContent(w,g,iss,p,sc)
+  if(!content){showToast('请至少填写一项内容');return}
+  saveInternReportItem(t,wk,content,false)
+  closeM();showToast('周报已提交给导师和HR ✓');refreshInternRptCard()
+}
+
+let pendingInternFile=null
+function handleInternReportFile(inp){
+  const f=inp.files?.[0];if(!f)return;pendingInternFile=f
+  document.getElementById('ir-file-preview').style.display='block'
+  document.getElementById('ir-fname').textContent=f.name
+  document.getElementById('ir-fsize').textContent=(f.size/1024).toFixed(1)+' KB'
+  document.getElementById('ir-drop-zone').style.display='none'
+}
+function handleInternReportDrop(e){
+  e.preventDefault();const f=e.dataTransfer.files?.[0];if(!f)return
+  const inp=document.getElementById('ir-file');const dt=new DataTransfer();dt.items.add(f);inp.files=dt.files
+  handleInternReportFile(inp);e.currentTarget.style.borderColor='var(--g200)';e.currentTarget.style.background=''
+}
+function clearInternReportFile(){
+  pendingInternFile=null
+  document.getElementById('ir-file-preview').style.display='none'
+  document.getElementById('ir-drop-zone').style.display='block'
+  document.getElementById('ir-file').value=''
+}
+function submitInternUploadReport(){
+  const t=(document.getElementById('ir-u-title')?.value||'').trim()
+  const wk=document.getElementById('ir-u-week')?.value||'第3周'
+  const note=document.getElementById('ir-u-note')?.value||''
+  if(!t){showToast('请填写周报标题');return}
+  if(!pendingInternFile){showToast('请先选择要上传的文件');return}
+  const content='【上传附件】'+pendingInternFile.name+(note?'\n\n补充说明：'+note:'')
+  saveInternReportItem(t,wk,content,true,pendingInternFile.name)
+  pendingInternFile=null;closeM();showToast('文档已上传并提交给导师和HR ✓');refreshInternRptCard()
+}
+function saveInternReportItem(t,wk,content,isUpload,fileName){
+  const rpts=getInternReports()
+  rpts.unshift({id:'ir'+Date.now(),internId:'chenchen',internName:'陈晨',date:new Date().toLocaleDateString('zh-CN'),week:wk,title:t,content,isUpload:!!isUpload,fileName:fileName||''})
+  saveInternReports(rpts)
+}
+function editReport(id){
+  const rpts=getReports();const r=rpts.find(x=>x.id===id);if(!r)return
+  openM('编辑周报：'+r.title,`
+    <div class="fg"><label class="fl">标题</label><input class="fi" id="er-title" value="${esc(r.title)}"></div>
+    <div class="fg"><label class="fl">内容</label><textarea class="fi" id="er-content" rows="7">${esc(r.content)}</textarea></div>
+  `,[{lbl:'取消',cls:'sec',fn:'openReportModal()'},{lbl:'保存',cls:'pri',fn:`saveEditReport('${id}')`}])
+}
+function saveEditReport(id){
+  const rpts=getReports();const idx=rpts.findIndex(x=>x.id===id);if(idx<0)return
+  rpts[idx].title=(document.getElementById('er-title')?.value||rpts[idx].title).trim()
+  rpts[idx].content=(document.getElementById('er-content')?.value||rpts[idx].content).trim()
+  saveReports(rpts);closeM();showToast('周报已更新 ✓');openReportModal()
+}
+function deleteReport(id){
+  if(!confirm('确认删除该周报？'))return
+  saveReports(getReports().filter(r=>r.id!==id));closeM();showToast('已删除');openReportModal()
+}
+
+/* ══════════════════════════════════════
+   INTERN DATA
+══════════════════════════════════════ */
+const ALL_INTERNS=[
+  {id:'chenchen',name:'陈晨',dept:'研发岗',score:86,progress:68,status:'good',mentor:'李明',avCls:'av-b',
+   resume:{school:'北京大学',major:'计算机科学与技术',gpa:'3.8/4.0',projects:['校园外卖平台（React+Node.js，3万用户）','图像识别毕设（PyTorch，准确率94%）'],internships:['2024寒假·字节跳动·前端实习·3个月'],skills:'JavaScript/React/Python/Git',resumeLink:''}},
+  {id:'wanghao',name:'王浩',dept:'研发岗',score:61,progress:41,status:'risk',mentor:'李明',avCls:'av-am',
+   resume:{school:'中山大学',major:'软件工程',gpa:'3.2/4.0',projects:['Todo应用（Vue.js）','个人博客网站'],internships:[],skills:'Java/Python/基础前端',resumeLink:''}},
+  {id:'zhangyu',name:'张雨',dept:'产品岗',score:67,progress:58,status:'risk',mentor:'赵薇',avCls:'av-am',
+   resume:{school:'复旦大学',major:'工业设计',gpa:'3.5/4.0',projects:['校园APP产品设计','用户研究报告'],internships:['2023暑期·腾讯·产品实习·2个月'],skills:'Axure/Figma/数据分析',resumeLink:''}},
+  {id:'lina',name:'李娜',dept:'产品岗',score:80,progress:74,status:'good',mentor:'赵薇',avCls:'av-b',resume:{school:'浙江大学',major:'信息管理',gpa:'3.7/4.0',projects:['电商平台用户体验优化'],internships:[],skills:'产品文档/数据分析/PPT',resumeLink:''}},
+  {id:'liubo',name:'刘博',dept:'产品岗',score:75,progress:68,status:'good',mentor:'赵薇',avCls:'av-b',resume:{school:'同济大学',major:'交互设计',gpa:'3.4/4.0',projects:['智能家居APP原型'],internships:[],skills:'Figma/用户研究',resumeLink:''}},
+  {id:'zhaolei',name:'赵磊',dept:'研发岗',score:82,progress:75,status:'good',mentor:'李明',avCls:'av-b',resume:{school:'北京航空航天大学',major:'软件工程',gpa:'3.6/4.0',projects:['分布式缓存系统','微服务治理平台'],internships:[],skills:'Java/SpringBoot/Redis',resumeLink:''}},
+  {id:'liuwei',name:'刘伟',dept:'销售岗',score:70,progress:61,status:'risk',mentor:'孙磊',avCls:'av-am',resume:{school:'武汉大学',major:'市场营销',gpa:'3.3/4.0',projects:['销售策略分析报告'],internships:[],skills:'Excel/PPT/客户关系管理',resumeLink:''}},
+  {id:'chenming',name:'陈明',dept:'销售岗',score:62,progress:55,status:'risk',mentor:'孙磊',avCls:'av-r',resume:{school:'华南理工大学',major:'工商管理',gpa:'3.1/4.0',projects:[],internships:[],skills:'基础销售技能',resumeLink:''}},
+  {id:'zhaomin',name:'赵敏',dept:'销售岗',score:78,progress:72,status:'good',mentor:'孙磊',avCls:'av-b',resume:{school:'厦门大学',major:'国际贸易',gpa:'3.6/4.0',projects:['跨境电商调研报告'],internships:['2024·阿里巴巴·运营实习·2个月'],skills:'英语/数据分析/销售',resumeLink:''}},
+  {id:'wukai',name:'吴凯',dept:'研发岗',score:85,progress:72,status:'good',mentor:'李明',avCls:'av-gr',resume:{school:'上海交通大学',major:'计算机工程',gpa:'3.8/4.0',projects:['实时数据处理系统'],internships:[],skills:'Go/Python/Kafka',resumeLink:''}},
+  {id:'zhoulin',name:'周琳',dept:'研发岗',score:76,progress:65,status:'good',mentor:'李明',avCls:'av-b',resume:{school:'中国人民大学',major:'信息系统',gpa:'3.4/4.0',projects:['CRM系统开发'],internships:[],skills:'Java/SQL/Spring',resumeLink:''}},
+  {id:'huangcheng',name:'黄诚',dept:'研发岗',score:88,progress:80,status:'good',mentor:'李明',avCls:'av-gr',resume:{school:'清华大学',major:'软件工程',gpa:'3.9/4.0',projects:['操作系统内核模块','编译器实现'],internships:['2024·微软·软件工程实习·3个月'],skills:'C++/Rust/系统编程',resumeLink:''}},
+  {id:'xuman',name:'徐曼',dept:'研发岗',score:68,progress:58,status:'risk',mentor:'李明',avCls:'av-am',resume:{school:'南京大学',major:'计算机科学',gpa:'3.2/4.0',projects:['个人项目管理工具'],internships:[],skills:'Python/Vue.js',resumeLink:''}},
+  {id:'chenxiao',name:'陈晓',dept:'产品岗',score:82,progress:76,status:'good',mentor:'赵薇',avCls:'av-gr',resume:{school:'北京大学',major:'新闻传播',gpa:'3.7/4.0',projects:['内容平台产品设计'],internships:[],skills:'产品设计/用户研究/运营',resumeLink:''}},
+  {id:'majun',name:'马俊',dept:'产品岗',score:70,progress:62,status:'risk',mentor:'赵薇',avCls:'av-am',resume:{school:'北京师范大学',major:'教育技术',gpa:'3.3/4.0',projects:['在线教育平台分析'],internships:[],skills:'数据分析/原型设计',resumeLink:''}},
+  {id:'wangfang',name:'王芳',dept:'产品岗',score:78,progress:71,status:'good',mentor:'赵薇',avCls:'av-b',resume:{school:'武汉大学',major:'管理信息系统',gpa:'3.5/4.0',projects:['供应链管理系统需求分析'],internships:[],skills:'SQL/Excel/Visio',resumeLink:''}},
+  {id:'sunjie',name:'孙杰',dept:'产品岗',score:84,progress:79,status:'good',mentor:'赵薇',avCls:'av-gr',resume:{school:'南京大学',major:'软件工程',gpa:'3.7/4.0',projects:['B2B SaaS产品原型'],internships:['2023·京东·产品实习·2个月'],skills:'产品/研发双栈/数据分析',resumeLink:''}},
+  {id:'zhanghao',name:'张浩',dept:'销售岗',score:80,progress:75,status:'good',mentor:'孙磊',avCls:'av-gr',resume:{school:'对外经济贸易大学',major:'市场营销',gpa:'3.6/4.0',projects:['销售漏斗优化分析'],internships:[],skills:'销售/CRM/数据分析',resumeLink:''}},
+  {id:'linyun',name:'林云',dept:'销售岗',score:74,progress:66,status:'good',mentor:'孙磊',avCls:'av-b',resume:{school:'山东大学',major:'工商管理',gpa:'3.4/4.0',projects:['客户细分模型研究'],internships:[],skills:'销售/客户服务/Excel',resumeLink:''}}
+]
+const RISK_DATA={
+  wanghao:{level:'高风险',lc:'b-r',dims:[{l:'任务完成率',v:40,c:'var(--r500)',desc:'本周仅完成2/6任务，独立开发严重滞后'},{l:'导师评价',v:62,c:'var(--am500)',desc:'主动性不足，不及时求助'},{l:'参与度',v:55,c:'var(--am500)',desc:'多次未出席站会'},{l:'产出质量',v:58,c:'var(--am500)',desc:'代码Review问题较多'}],summary:'适岗分61，高风险预警。主要问题：独立开发能力和主动性不足。建议三方约谈。'},
+  zhangyu:{level:'中风险',lc:'b-am',dims:[{l:'任务完成率',v:65,c:'var(--am500)',desc:'部分任务延期'},{l:'导师评价',v:70,c:'var(--am500)',desc:'需加强需求分析深度'},{l:'参与度',v:72,c:'var(--gr500)',desc:'评审会有贡献'},{l:'产出质量',v:60,c:'var(--am500)',desc:'PRD文档逻辑待提升'}],summary:'适岗分67，中风险。建议导师加强文档规范指导。'},
+  liuwei:{level:'中风险',lc:'b-am',dims:[{l:'客户跟进',v:60,c:'var(--am500)',desc:'跟进率偏低'},{l:'导师评价',v:72,c:'var(--gr500)',desc:'态度积极需加强话术'},{l:'参与度',v:80,c:'var(--gr500)',desc:'主动参与拜访'},{l:'产出质量',v:60,c:'var(--am500)',desc:'销售报告需改进'}],summary:'适岗分70，中风险边缘。参与度好，产出质量需提升。'}
+}
+const DEPT_DATA={
+  rd:{name:'研发部',color:'var(--b500)',rate:78,total:8,normal:6,risk:2,weekAvg:[68,72,78],dims:[{l:'任务完成率',v:75},{l:'代码质量',v:80},{l:'文档输出',v:70},{l:'协作沟通',v:82}],summary:'研发部适岗率78%，三部门最高。6名正常，2名需关注。建议加强独立开发指导。'},
+  pm:{name:'产品部',color:'var(--gr500)',rate:71,total:7,normal:5,risk:2,weekAvg:[62,66,71],dims:[{l:'需求分析',v:68},{l:'文档质量',v:65},{l:'原型设计',v:75},{l:'跨部门协作',v:72}],summary:'产品部适岗率71%，文档质量是主要短板。建议组织专项培训。'},
+  sales:{name:'销售部',color:'var(--am500)',rate:65,total:5,normal:3,risk:2,weekAvg:[56,61,65],dims:[{l:'客户跟进',v:60},{l:'销售话术',v:65},{l:'数据分析',v:58},{l:'团队协作',v:72}],summary:'销售部适岗率65%，三部门最低。建议组织销售技能专项培训。'}
+}
+const WEEK_DATA={
+  1:{phase:'入职融入期',status:'已完成',tasks:['了解团队结构与业务背景','完成工具账号配置','参加Kick-off启动会议','阅读产品核心文档'],mentorFeedback:'陈晨第一周表现出色，融入速度快，主动提问，对业务理解超出预期。',hrFeedback:'入职状态良好，推荐纳入优先培养通道。',weekReport:'本周顺利完成入职融入阶段全部目标。完成开发环境搭建，熟悉了团队Git工作流和Jira任务管理流程，对核心业务逻辑有了初步认识。'},
+  2:{phase:'业务理解期',status:'已完成',tasks:['深入阅读技术架构文档','参与2次Code Review','完成第一个Bug Fix','输出技术调研报告'],mentorFeedback:'代码质量高于预期，Bug Fix效率快思路清晰。文档写作需更详细。',hrFeedback:'第二周任务完成率100%，适岗分提升至79分。建议下周承担完整模块。',weekReport:'本周深入学习系统微服务架构，成功修复用户登录接口偶发超时Bug。完成缓存方案调研报告，推荐采用Redis Cluster。'},
+  3:{phase:'独立承担期',status:'进行中',tasks:['用户中心模块重构（65%）','技术方案文档（完成）','接口联调自测（完成）','参与代码Review（完成）','产品评审会建议（进行中）','跨部门协作（待完成）'],mentorFeedback:'本周综合评估进行中，初步观察模块重构思路清晰，方案文档质量高。',hrFeedback:'第三周进度正常，适岗分86，关注跨部门协作完成情况。',weekReport:'本周主要进行用户中心模块重构，完成约65%，技术方案文档已获认可，接口联调顺利完成。（本周报持续更新中）'}
+}
+
+/* ══════════════════════════════════════
+   INTERN MODALS
+══════════════════════════════════════ */
+function openWeekModal(wk){
+  const d=WEEK_DATA[wk];if(!d)return
+  const taskHtml=d.tasks.map(t=>`<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--g100);font-size:13px"><i class="ti ti-circle-check" style="color:var(--gr500);font-size:15px;flex-shrink:0"></i>${t}</div>`).join('')
+  openM(`第${wk}周历史 · ${d.phase}（${d.status}）`,`
+    <div class="mtabs">
+      <div class="mti active" onclick="mTab(this,'wt${wk}')">任务完成</div>
+      <div class="mti" onclick="mTab(this,'wm${wk}')">导师评价</div>
+      <div class="mti" onclick="mTab(this,'wh${wk}')">HR评价</div>
+      <div class="mti" onclick="mTab(this,'wr${wk}')">工作周报</div>
+    </div>
+    <div id="wt${wk}" class="mtp active">${taskHtml}</div>
+    <div id="wm${wk}" class="mtp"><div style="background:var(--gr50);border:1px solid var(--gr100);border-radius:10px;padding:14px;font-size:13.5px;color:var(--gr700);line-height:1.8"><div style="font-size:12px;font-weight:600;margin-bottom:8px"><i class="ti ti-user-check" style="font-size:14px;vertical-align:-2px;margin-right:4px"></i>导师评价 · 李明</div>${d.mentorFeedback}</div></div>
+    <div id="wh${wk}" class="mtp"><div style="background:var(--b50);border:1px solid var(--b100);border-radius:10px;padding:14px;font-size:13.5px;color:var(--b700);line-height:1.8"><div style="font-size:12px;font-weight:600;margin-bottom:8px"><i class="ti ti-building-community" style="font-size:14px;vertical-align:-2px;margin-right:4px"></i>HR评价</div>${d.hrFeedback}</div></div>
+    <div id="wr${wk}" class="mtp">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><span style="font-size:13px;font-weight:600">工作周报</span><button class="mbtn sec" style="padding:5px 12px;font-size:12px" onclick="editWeekReport(${wk})"><i class="ti ti-edit" style="font-size:12px;margin-right:3px"></i>编辑</button></div>
+      <div id="wr-txt-${wk}" style="background:var(--g50);border-radius:10px;padding:14px;font-size:13.5px;line-height:1.85;color:var(--g800);white-space:pre-wrap">${d.weekReport}</div>
+      ${wk===3?`<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--g100)"><label class="fl">上传附件周报</label><input type="file" accept=".pdf,.doc,.docx" onchange="handleFileUpload(this)" style="font-size:12px;color:var(--g600);padding:4px 0"><div style="font-size:11px;color:var(--g400);margin-top:3px">支持 PDF / Word 格式</div></div>`:''}
+    </div>
+  `)
+}
+function editWeekReport(wk){
+  openM(`编辑第${wk}周工作周报`,`<textarea class="fi" id="wr-edit" rows="8">${WEEK_DATA[wk].weekReport}</textarea>`,[{lbl:'取消',cls:'sec',fn:'closeM()'},{lbl:'保存',cls:'pri',fn:`saveWeekReport(${wk})`}])
+}
+function saveWeekReport(wk){const v=(document.getElementById('wr-edit')?.value||'').trim();if(!v)return;WEEK_DATA[wk].weekReport=v;closeM();showToast('周报已保存 ✓')}
+function handleFileUpload(inp){if(inp.files?.[0])showToast('已上传：'+inp.files[0].name+' ✓')}
+
+function openFeedbackModal(){
+  openM('待导师反馈 & 沟通',`
+    <div class="mtabs">
+      <div class="mti active" onclick="mTab(this,'fb-list')">反馈列表</div>
+      <div class="mti" onclick="mTab(this,'fb-ask')">向导师提问</div>
+      <div class="mti" onclick="mTab(this,'fb-submit')">提交任务</div>
+    </div>
+    <div id="fb-list" class="mtp active">
+      ${[{title:'用户中心PR #42',from:'李明',time:'今天 14:30',status:'待回复',content:'请导师帮忙review这个PR，重点关注异常处理部分'},
+         {title:'技术方案评审意见',from:'李明',time:'昨天 16:00',status:'已回复',content:'整体清晰，建议性能优化部分增加缓存方案说明。'},
+         {title:'第三方接口集成',from:'陈晨',time:'周一 10:00',status:'已解决',content:'问题已解决：使用了指数退避重试策略。感谢！'}
+      ].map(f=>`<div style="padding:12px;background:var(--g50);border-radius:10px;margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:5px"><span style="font-size:13px;font-weight:600">${f.title}</span><span class="bdg ${f.status==='已回复'?'b-gr':f.status==='已解决'?'b-gray':'b-am'}">${f.status}</span></div>
+        <div style="font-size:11.5px;color:var(--g400);margin-bottom:5px">${f.from} · ${f.time}</div>
+        <div style="font-size:13px;color:var(--g600);line-height:1.6">${f.content}</div>
+      </div>`).join('')}
+    </div>
+    <div id="fb-ask" class="mtp">
+      <div class="fg"><label class="fl">问题标题</label><input class="fi" id="ask-t" placeholder="简要描述问题"></div>
+      <div class="fg"><label class="fl">详细描述</label><textarea class="fi" id="ask-c" rows="4" placeholder="背景、已尝试的解法、期望获得的帮助…"></textarea></div>
+      <button class="mbtn pri" onclick="submitAsk()" style="margin-top:2px"><i class="ti ti-send" style="margin-right:4px;font-size:13px"></i>发送给导师</button>
+    </div>
+    <div id="fb-submit" class="mtp">
+      <div class="fg"><label class="fl">任务名称</label><input class="fi" id="sub-t" placeholder="例：用户中心模块重构"></div>
+      <div class="fg"><label class="fl">完成说明</label><textarea class="fi" id="sub-c" rows="3" placeholder="描述完成情况、遇到的挑战和解决方案…"></textarea></div>
+      <div class="fg"><label class="fl">自评分数（1-10）</label><input class="fi" id="sub-s" type="number" min="1" max="10" placeholder="7" style="width:100px"></div>
+      <button class="mbtn pri" onclick="submitTaskFb()" style="margin-top:2px"><i class="ti ti-upload" style="margin-right:4px;font-size:13px"></i>提交任务反馈</button>
+    </div>
+  `)
+}
+function submitAsk(){if(!(document.getElementById('ask-t')?.value||'').trim()){showToast('请填写问题标题');return}closeM();showToast('已发送给导师 ✓')}
+function submitTaskFb(){if(!(document.getElementById('sub-t')?.value||'').trim()){showToast('请填写任务名称');return}closeM();showToast('任务反馈已提交 ✓')}
+
+function openProgressModal(){
+  const maxH=80
+  const scores=[62,65,68,70,72,74,75,76,78,80,82,84]
+  const labels=['D1','D3','D5','D7','D9','D11','D13','D15','D17','D19','D21','D23']
+  const bars=scores.map((s,i)=>`<div class="cbc"><div class="cbval">${s}</div><div class="cbar ${s>=80?'c-hi':s>=70?'c-mid':'c-lo'}" style="height:${Math.round(s/100*maxH)}px"></div><div class="cblbl">${labels[i]}</div></div>`).join('')
+  const phases=[{l:'融入期',done:true,c:'var(--b500)'},{l:'理解期',done:true,c:'var(--b500)'},{l:'独立期',cur:true,c:'var(--am500)'},{l:'汇报期',done:false,c:'var(--g200)'}]
+  const segs=phases.map(p=>`<div style="flex:1;text-align:center;padding:0 2px"><div style="height:8px;background:${p.c};border-radius:4px;margin-bottom:5px"></div><div style="font-size:11px;font-weight:${p.cur?700:400};color:${p.cur?'var(--b500)':'var(--g600)'}">${p.l}</div></div>`).join('')
+  const wkBars=[68,75,86].map((s,i)=>`<div class="cbc"><div class="cbval">${s}%</div><div class="cbar ${s>=80?'c-hi':s>=70?'c-mid':'c-lo'}" style="height:${Math.round(s/100*maxH)}px"></div><div class="cblbl">第${i+1}周</div></div>`).join('')
+  openM('实习进度详情',`
+    <div class="mstats"><div class="mstat"><div class="msv" style="color:var(--b500)">12天</div><div class="msl">已实习</div></div><div class="mstat"><div class="msv" style="color:var(--am500)">12天</div><div class="msl">剩余</div></div><div class="mstat"><div class="msv" style="color:var(--gr500)">50%</div><div class="msl">时间进度</div></div><div class="mstat"><div class="msv">68%</div><div class="msl">任务进度</div></div></div>
+    <div style="margin-bottom:18px"><div style="font-size:12px;font-weight:600;color:var(--g600);margin-bottom:10px">实习阶段进度</div><div style="display:flex;gap:4px">${segs}</div></div>
+    <div style="margin-bottom:18px"><div style="font-size:12px;font-weight:600;color:var(--g600);margin-bottom:6px">各周适岗分</div><div class="cbars">${wkBars}</div></div>
+    <div><div style="font-size:12px;font-weight:600;color:var(--g600);margin-bottom:6px">适岗分每日趋势</div><div class="cbars">${bars}</div><div style="font-size:11px;color:var(--g400);margin-top:4px;text-align:center">绿色≥80 · 黄色≥70 · 红色<70</div></div>
+  `)
+}
+
+/* ══════════════════════════════════════
+   INTERN DETAIL (Req 5 - with resume)
+══════════════════════════════════════ */
+function openInternModal(id){
+  const base=ALL_INTERNS.find(i=>i.id===id)||ALL_INTERNS[0]
+  const sc=base.score>=80?'var(--gr500)':base.score>=70?'var(--am500)':'var(--r500)'
+  const maxH=70
+  const ws=[base.score-14,base.score-7,base.score]
+  const wkBars=ws.map((s,i)=>`<div class="cbc"><div class="cbval">${s}</div><div class="cbar ${s>=80?'c-hi':s>=70?'c-mid':'c-lo'}" style="height:${Math.round(s/100*maxH)}px"></div><div class="cblbl">第${i+1}周</div></div>`).join('')
+  const dims=[{l:'任务完成率',v:base.score>=80?80:42,c:'var(--b500)'},{l:'导师评价',v:base.score,c:'var(--gr500)'},{l:'参与度',v:base.score-5,c:'#6B4FFF'},{l:'产出质量',v:base.score-8,c:'var(--am500)'}]
+  const dimHtml=dims.map(d=>`<div class="rdrow"><span class="rdlbl">${d.l}</span><div class="rdbar"><div class="rdfill" style="width:${d.v}%;background:${d.c}"></div></div><span class="rdval" style="color:${d.c}">${d.v}</span></div>`).join('')
+  const res=base.resume||{}
+  const projHtml=(res.projects||[]).length?(res.projects||[]).map(p=>`<div style="padding:3px 0;font-size:13px">· ${p}</div>`).join(''):'<span style="font-size:13px;color:var(--g400)">暂无</span>'
+  const internHtml=(res.internships||[]).length?(res.internships||[]).map(i=>`<div style="padding:3px 0;font-size:13px">· ${i}</div>`).join(''):'<span style="font-size:13px;color:var(--g400)">暂无实习经历</span>'
+  openM(`${base.name} · ${base.dept} · 适岗分 ${base.score}`,`
+    <div class="mstats"><div class="mstat"><div class="msv" style="color:${sc}">${base.score}</div><div class="msl">适岗分</div></div><div class="mstat"><div class="msv">${base.progress}%</div><div class="msl">进度</div></div><div class="mstat"><div class="msv">${base.status==='good'?'良好':'需关注'}</div><div class="msl">状态</div></div><div class="mstat"><div class="msv">3周</div><div class="msl">已实习</div></div></div>
+    <div class="mtabs">
+      <div class="mti active" onclick="mTab(this,'id-chart')">数据图表</div>
+      <div class="mti" onclick="mTab(this,'id-resume')">简历信息</div>
+    </div>
+    <div id="id-chart" class="mtp active">
+      <div style="font-size:12px;font-weight:600;color:var(--g600);margin-bottom:8px">各周适岗分</div>
+      <div class="cbars">${wkBars}</div>
+      <div style="font-size:12px;font-weight:600;color:var(--g600);margin:14px 0 8px">四维评分</div>
+      ${dimHtml}
+    </div>
+    <div id="id-resume" class="mtp">
+      <div class="rrow"><div class="rlbl">学校</div><div class="rval">${res.school||'—'}</div></div>
+      <div class="rrow"><div class="rlbl">专业</div><div class="rval">${res.major||'—'}</div></div>
+      <div class="rrow"><div class="rlbl">GPA</div><div class="rval">${res.gpa||'—'}</div></div>
+      <div class="rrow"><div class="rlbl">项目经历</div><div class="rval">${projHtml}</div></div>
+      <div class="rrow"><div class="rlbl">实习经历</div><div class="rval">${internHtml}</div></div>
+      <div class="rrow"><div class="rlbl">核心技能</div><div class="rval">${res.skills||'—'}</div></div>
+      <div class="rrow" style="border-bottom:none"><div class="rlbl">简历附件</div><div class="rval">${res.resumeLink?`<a href="${res.resumeLink}" target="_blank" style="color:var(--b500)">查看简历 →</a>`:'<span style="color:var(--g400)">未上传</span><input type="file" accept=".pdf,.doc,.docx" onchange="handleResumeUpload(this,\''+id+'\')" style="margin-left:10px;font-size:12px">'}</div></div>
+    </div>
+  `)
+}
+function handleResumeUpload(inp,id){if(inp.files?.[0])showToast('简历「'+inp.files[0].name+'」已上传 ✓')}
+
+/* ══════════════════════════════════════
+   LIST & RISK MODALS
+══════════════════════════════════════ */
+function openListModal(type){
+  // Use the current batch's myInterns slice for the logged-in mentor
+  const bd=getCurBatchData()
+  const batchInternIds=bd?bd.myInterns.map(i=>i.id):[]
+  const myInterns=batchInternIds.length
+    ? ALL_INTERNS.filter(i=>batchInternIds.includes(i.id))
+    : ALL_INTERNS.filter(i=>i.mentor==='李明')
+  const list=type==='good'?myInterns.filter(i=>i.status==='good'):type==='risk'?myInterns.filter(i=>i.status!=='good'):myInterns
+  const title=type==='good'?`状态良好 (${list.length}人)`:type==='risk'?`需重点关注 (${list.length}人)`:`全部实习生 (${list.length}人)`
+  const rows=list.map(i=>{
+    const sc=i.score>=80?'var(--gr500)':i.score>=70?'var(--am500)':'var(--r500)'
+    const bd=i.status==='good'?'b-gr':'b-am'
+    return `<tr class="clickable" onclick="closeM();setTimeout(()=>openInternModal('${i.id}'),80)"><td><div style="display:flex;align-items:center;gap:8px"><div class="av ${i.avCls}" style="width:26px;height:26px;font-size:10px;flex-shrink:0">${i.name[0]}</div><span style="font-weight:600">${i.name}</span></div></td><td>${i.dept}</td><td style="font-weight:700;color:${sc}">${i.score}</td><td>${i.progress}%</td><td><span class="bdg ${bd}">${i.status==='good'?'正常':'需关注'}</span></td><td style="color:var(--b500);font-size:12px">详情 →</td></tr>`
+  }).join('')
+  openM(title,`<div style="font-size:12px;color:var(--g400);margin-bottom:10px">点击姓名行查看学员详细数据（含简历）</div><table class="dtbl"><thead><tr><th>姓名</th><th>岗位</th><th>适岗分</th><th>进度</th><th>状态</th><th></th></tr></thead><tbody>${rows}</tbody></table>`)
+}
+function openHRListModal(type){
+  const list=type==='good'?ALL_INTERNS.filter(i=>i.status==='good'):ALL_INTERNS.filter(i=>i.status!=='good')
+  const title=type==='good'?`全批次状态正常 (${list.length}人)`:`全批次需关注 (${list.length}人)`
+  const rows=list.map(i=>{
+    const sc=i.score>=80?'var(--gr500)':i.score>=70?'var(--am500)':'var(--r500)'
+    const bd=i.status==='good'?'b-gr':'b-am'
+    return `<tr class="clickable" onclick="closeM();setTimeout(()=>openRiskModal('${i.id}'),80)"><td><div style="display:flex;align-items:center;gap:8px"><div class="av ${i.avCls}" style="width:26px;height:26px;font-size:10px;flex-shrink:0">${i.name[0]}</div><span style="font-weight:600">${i.name}</span></div></td><td>${i.dept}</td><td>${i.mentor}</td><td style="font-weight:700;color:${sc}">${i.score}</td><td>${i.progress}%</td><td><span class="bdg ${bd}">${i.status==='good'?'正常':'需关注'}</span></td><td style="color:var(--b500);font-size:12px">详情 →</td></tr>`
+  }).join('')
+  openM(title,`<div style="font-size:12px;color:var(--g400);margin-bottom:10px">点击任意行查看该学员的适岗详情与简历</div><table class="dtbl"><thead><tr><th>姓名</th><th>岗位</th><th>导师</th><th>适岗分</th><th>进度</th><th>状态</th><th></th></tr></thead><tbody>${rows}</tbody></table>`)
+}
+function openRiskModal(id){
+  const base=ALL_INTERNS.find(i=>i.id===id)||ALL_INTERNS[0]
+  const rd=RISK_DATA[id]||{level:base.status==='good'?'状态正常':'需关注',lc:base.status==='good'?'b-gr':'b-am',dims:[{l:'任务完成率',v:base.progress,c:'var(--b500)',desc:''},{l:'导师评价',v:base.score,c:'var(--gr500)',desc:''},{l:'参与度',v:base.score-5,c:'#6B4FFF',desc:''},{l:'产出质量',v:base.score-8,c:'var(--am500)',desc:''}],summary:`${base.name}适岗分${base.score}，${base.status==='good'?'状态良好，继续保持。':'需持续关注。'}`}
+  const dimHtml=rd.dims.map(d=>`<div style="margin-bottom:12px"><div class="rdrow"><span class="rdlbl">${d.l}</span><div class="rdbar"><div class="rdfill" style="width:${d.v}%;background:${d.c}"></div></div><span class="rdval" style="color:${d.c}">${d.v}</span></div>${d.desc?`<div style="font-size:11.5px;color:var(--g400);padding-left:96px;margin-top:2px">${d.desc}</div>`:''}</div>`).join('')
+  const res=base.resume||{}
+  const projHtml=(res.projects||[]).map(p=>`<div style="padding:3px 0;font-size:13px">· ${p}</div>`).join('')||'<span style="font-size:13px;color:var(--g400)">暂无</span>'
+  const internHtml=(res.internships||[]).map(i=>`<div style="padding:3px 0;font-size:13px">· ${i}</div>`).join('')||'<span style="font-size:13px;color:var(--g400)">暂无</span>'
+  openM(`${base.name} · ${base.dept} · ${rd.level}`,`
+    <div style="background:var(--r50);border:1px solid var(--r100);border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:13px;color:var(--r700);line-height:1.65"><strong>AI综合分析：</strong>${rd.summary}</div>
+    <div class="mtabs">
+      <div class="mti active" onclick="mTab(this,'ri-dims')">维度评分</div>
+      <div class="mti" onclick="mTab(this,'ri-resume')">简历信息</div>
+    </div>
+    <div id="ri-dims" class="mtp active">${dimHtml}</div>
+    <div id="ri-resume" class="mtp">
+      <div class="rrow"><div class="rlbl">学校</div><div class="rval">${res.school||'—'}</div></div>
+      <div class="rrow"><div class="rlbl">专业</div><div class="rval">${res.major||'—'}</div></div>
+      <div class="rrow"><div class="rlbl">GPA</div><div class="rval">${res.gpa||'—'}</div></div>
+      <div class="rrow"><div class="rlbl">项目经历</div><div class="rval">${projHtml}</div></div>
+      <div class="rrow"><div class="rlbl">实习经历</div><div class="rval">${internHtml}</div></div>
+      <div class="rrow" style="border-bottom:none"><div class="rlbl">核心技能</div><div class="rval">${res.skills||'—'}</div></div>
+    </div>
+    <div style="padding-top:14px;border-top:1px solid var(--g100);margin-top:14px">
+      <div style="font-size:12px;font-weight:600;color:var(--g600);margin-bottom:9px">发起约谈</div>
+      <div class="contact-btns">
+        <button class="cbtn m" onclick="sendContact('${base.mentor}','${base.name}')"><i class="ti ti-phone"></i>约谈导师（${base.mentor}）</button>
+        <button class="cbtn i" onclick="sendContact('${base.name}','${base.name}')"><i class="ti ti-user"></i>约谈实习生（${base.name}）</button>
+      </div>
+    </div>
+  `)
+}
+function sendContact(target,intern){closeM();showToast('已向'+target+'发送约谈通知 ✓')}
+function openDeptModal(id){
+  const d=DEPT_DATA[id];if(!d)return
+  const maxH=70
+  const bars=d.weekAvg.map((s,i)=>`<div class="cbc"><div class="cbval">${s}%</div><div class="cbar ${s>=75?'c-hi':s>=65?'c-mid':'c-lo'}" style="height:${Math.round(s/100*maxH)}px"></div><div class="cblbl">第${i+1}周</div></div>`).join('')
+  const dimHtml=d.dims.map(dim=>`<div class="dbar"><div style="display:flex;justify-content:space-between;margin-bottom:5px"><span style="font-size:13px;font-weight:600">${dim.l}</span><span style="font-weight:700;color:${d.color}">${dim.v}%</span></div><div class="dbt"><div class="dbf" style="width:${dim.v}%;background:${d.color}"></div></div></div>`).join('')
+  const members=ALL_INTERNS.filter(i=>i.dept.startsWith(d.name.replace('部','').replace('销售','销售')))
+  const rows=members.map(m=>{const sc=m.score>=80?'var(--gr500)':m.score>=70?'var(--am500)':'var(--r500)';return `<tr class="clickable" onclick="closeM();setTimeout(()=>openRiskModal('${m.id}'),80)"><td style="color:var(--b600);font-weight:600">${m.name}</td><td style="font-weight:700;color:${sc}">${m.score}</td><td>${m.progress}%</td><td><span class="bdg ${m.status==='good'?'b-gr':'b-am'}">${m.status==='good'?'正常':'关注'}</span></td></tr>`}).join('')
+  openM(`${d.name} · 适岗率${d.rate}% · ${d.total}人`,`
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:16px"><div class="mstat"><div class="msv" style="color:${d.color}">${d.rate}%</div><div class="msl">适岗率</div></div><div class="mstat"><div class="msv" style="color:var(--gr500)">${d.normal}</div><div class="msl">状态正常</div></div><div class="mstat"><div class="msv" style="color:var(--r500)">${d.risk}</div><div class="msl">需关注</div></div></div>
+    <div class="mtabs"><div class="mti active" onclick="mTab(this,'dd-trend')">周趋势</div><div class="mti" onclick="mTab(this,'dd-dims')">能力维度</div><div class="mti" onclick="mTab(this,'dd-members')">成员明细</div><div class="mti" onclick="mTab(this,'dd-summary')">AI总结</div></div>
+    <div id="dd-trend" class="mtp active"><div class="cbars">${bars}</div></div>
+    <div id="dd-dims" class="mtp">${dimHtml}</div>
+    <div id="dd-members" class="mtp"><div style="font-size:12px;color:var(--g400);margin-bottom:8px">点击成员查看详细数据与简历</div><table class="dtbl"><thead><tr><th>姓名</th><th>适岗分</th><th>进度</th><th>状态</th></tr></thead><tbody>${rows}</tbody></table></div>
+    <div id="dd-summary" class="mtp"><div style="background:var(--b50);border:1px solid var(--b100);border-radius:10px;padding:14px;font-size:13.5px;color:var(--b700);line-height:1.8"><strong>AI分析：</strong><br>${d.summary}</div></div>
+  `)
+}
+
+/* ══════════════════════════════════════
+   CHAT (Req 6 - private per-user, persisted)
+══════════════════════════════════════ */
+function updateMsgDot(){
+  if(!CUR)return
+  const contacts=CONTACTS[CUR.role]||[]
+  let hasNew=false
+  contacts.forEach(c=>{
+    const msgs=c.isGroup?getChat(c.id,'__group__'):getChat(CUR.user,c.id)
+    if(msgs.length>0){const last=msgs[msgs.length-1];if(last.from!==CUR.user)hasNew=true}
+  })
+  document.getElementById('msg-dot').style.display=hasNew?'block':'none'
+}
+function renderContacts(){
+  const contacts=CONTACTS[CUR.role]||[]
+  const el=document.getElementById('chat-contacts');el.innerHTML=''
+  contacts.forEach(c=>{
+    const msgs=c.isGroup?getChat(c.id,'__group__'):getChat(CUR.user,c.id)
+    const last=msgs.length?msgs[msgs.length-1]:null
+    const div=document.createElement('div');div.className='ccontact'+(curChat===c.id?' active':'')
+    div.innerHTML=`<div class="av ${c.avCls}" style="width:32px;height:32px;font-size:12px;flex-shrink:0">${c.name[0]}</div><div style="flex:1;min-width:0"><div class="ccname">${c.name}</div><div class="cclast">${last?last.text:c.role}</div></div>`
+    div.onclick=()=>openChatWith(c);el.appendChild(div)
+  })
+}
+function openChatWith(contact){
+  curChat=contact.id
+  renderContacts()
+  const msgs=contact.isGroup?getChat(contact.id,'__group__'):getChat(CUR.user,contact.id)
+  const main=document.getElementById('chat-main')
+  const msgsHtml=msgs.map(m=>{
+    const mine=m.from===CUR.user
+    const t=new Date(m.t).toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'})
+    return `<div class="cmsg ${mine?'mine':'other'}"><div><div class="cmsg-bub">${esc(m.text)}</div><div class="cmsg-t" style="text-align:${mine?'right':'left'}">${t}</div></div></div>`
+  }).join('')
+  main.innerHTML=`
+    <div class="chat-hd">
+      <div class="av ${contact.avCls}" style="width:32px;height:32px;font-size:12px;flex-shrink:0">${contact.name[0]}</div>
+      <div style="flex:1"><div style="font-size:13px;font-weight:600">${contact.name}</div><div style="font-size:11px;color:var(--g400)">${contact.role}</div></div>
+      <div style="font-size:11.5px;color:var(--gr500);font-weight:500"><i class="ti ti-lock" style="font-size:13px;vertical-align:-2px;margin-right:3px"></i>私密·自动存档</div>
+    </div>
+    <div class="chat-msgs" id="cms">${msgs.length?msgsHtml:'<div class="chat-date-divider">开始聊天</div>'}</div>
+    <div class="chat-foot">
+      <input class="chat-inp" id="cinp" placeholder="输入消息… (Enter发送)" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg()}">
+      <button class="chat-send" onclick="sendMsg()"><i class="ti ti-send"></i></button>
+    </div>`
+  document.getElementById('cms').scrollTop=99999
+  document.getElementById('cinp')?.focus()
+  updateMsgDot()
+}
+function sendMsg(){
+  if(!CUR||!curChat)return
+  const inp=document.getElementById('cinp');const txt=(inp?.value||'').trim();if(!txt)return;inp.value=''
+  const contact=CONTACTS[CUR.role]?.find(c=>c.id===curChat)
+  if(!contact)return
+  const msgs=contact.isGroup?getChat(contact.id,'__group__'):getChat(CUR.user,contact.id)
+  msgs.push({from:CUR.user,text:txt,t:Date.now()})
+  if(contact.isGroup)saveChat(contact.id,'__group__',msgs);else saveChat(CUR.user,contact.id,msgs)
+  const el=document.getElementById('cms');if(!el)return
+  const t=new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'})
+  const d=document.createElement('div');d.className='cmsg mine'
+  d.innerHTML=`<div><div class="cmsg-bub">${esc(txt)}</div><div class="cmsg-t" style="text-align:right">${t}</div></div>`
+  el.appendChild(d);el.scrollTop=99999
+  renderContacts()
+}
+
+/* ══════════════════════════════════════
+   AI (Req 3 - private per user)
+══════════════════════════════════════ */
+function collectAIMsgs(){
+  const msgs=[];document.querySelectorAll('#aimsgs .amsg').forEach(m=>{
+    const role=m.classList.contains('user')?'user':'bot'
+    const bub=m.querySelector('.abub');if(!bub)return
+    const txt=bub.innerText||bub.textContent
+    if(txt&&!txt.includes('你好！我是成长导航'))msgs.push({role,text:txt})
+  });return msgs
+}
+function loadAI(){
+  if(!CUR)return
+  const el=document.getElementById('aimsgs');if(!el)return
+  el.innerHTML=''
+  addAIBubble('你好！我是成长导航AI助手，每个账号的对话记录独立存储，仅你可见。随时提问～','bot',false)
+  const hist=getAIHist(CUR.user)
+  hist.forEach(m=>addAIBubble(m.text,m.role,false))
+}
+function addAIBubble(text,role,save=true){
+  const el=document.getElementById('aimsgs');if(!el)return
+  const d=document.createElement('div');d.className='amsg '+role
+  const av=role==='user'?`<div class="av av-b" style="width:28px;height:28px;font-size:11px;flex-shrink:0">我</div>`:`<div class="av av-b" style="width:28px;height:28px;font-size:13px;flex-shrink:0"><i class="ti ti-robot"></i></div>`
+  const bub=`<div class="abub">${text.replace(/\n/g,'<br>')}</div>`
+  d.innerHTML=role==='user'?bub+av:av+bub
+  el.appendChild(d);el.scrollTop=99999
+  if(save&&CUR)saveAIHist(CUR.user,collectAIMsgs())
+}
+const KB={
+  '优先做什么':'根据第3周「独立承担期」：\n\n① 🔴 最高优先：用户中心模块重构（截止周五，当前65%）\n② 🟡 必完：产品评审会输出1-2条改进建议\n③ 🟢 加分：完成跨部门协作，为第4周汇报积累素材',
+  '沟通卡点':'与导师沟通进度卡点：\n\n【准备】卡点描述+已尝试解法+预估剩余工时\n【话术】「我在[模块]卡了约[X]小时，尝试了方案A和B，您方便10分钟指导吗？」\n【时机】周三check-in时集中提出，避免频繁打扰',
+  '带教模板':'📋 第3周带教计划（独立承担期）：\n\n【周一·30min】目标对齐 → 明确3项核心任务\n【周三·15min】进度Check-in → 解决卡点\n【周五·45min】成果Review → 书面反馈（2亮点+2改进）\n\n💡 反馈要具体，「这段代码缺少异常处理」比「继续努力」有用10倍。',
+  '适岗风险':'📊 本批次20人风险分布：\n\n🟢 状态良好 14人（70%）\n🟡 需关注 4人（20%）\n🔴 高风险 2人（10%）\n\n主要风险：独立开发能力 > 跨部门协作 > 文档质量',
+  '转正评估':'🎯 转正评估体系（100分）：\n\n①任务完成质量 40分\n②成长速度 25分\n③团队协作 20分\n④自驱力与潜力 15分\n\n录用建议：≥85优先offer · 75-84正常录用 · 65-74延期评估 · <65不予转正'
+}
+async function sendAI(){
+  if(!CUR)return
+  const inp=document.getElementById('ainp');const q=(inp?.value||'').trim();if(!q)return;inp.value=''
+  addAIBubble(q,'user')
+  const el=document.getElementById('aimsgs')
+  const ld=document.createElement('div');ld.className='amsg bot'
+  ld.innerHTML=`<div class="av av-b" style="width:28px;height:28px;font-size:13px;flex-shrink:0"><i class="ti ti-robot"></i></div><div class="abub"><div class="dotld"><span></span><span></span><span></span></div></div>`
+  el.appendChild(ld);el.scrollTop=99999
+  const ans=await callClaude(q)
+  el.removeChild(ld);addAIBubble(ans,'bot')
+}
+async function callClaude(q){
+  const k=Object.keys(KB).find(key=>q.includes(key));if(k)return KB[k]
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':localStorage.getItem('claude_api_key')||'','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:800,
+        system:'你是「实习生成长导航」AI助手，服务于校招实习生带教场景。背景：20名实习生分布在研发/产品/销售岗，实习期4周（融入→理解→独立→汇报），服务实习生/导师/HR三类角色。用简洁友好的中文回答，300字以内，适当分段和用编号。',
+        messages:[{role:'user',content:q}]
+      })
+    })
+    if(!r.ok){const e=await r.json();return`请求失败（${r.status}）：${e.error?.message||'请稍后重试'}`}
+    const d=await r.json()
+    return d.content?.[0]?.text||'暂时无法获取回答，请重试。'
+  }catch(e){
+    return '网络异常，请检查连接后重试。你也可以使用上方快捷按钮获取预设答案。'
+  }
+}
+function goAsk(q){switchTab('ai');setTimeout(()=>{document.getElementById('ainp').value=q;sendAI()},80)}
+function aq(q){document.getElementById('ainp').value=q;sendAI()}
+
+/* ══════════════════════════════════════
+   UTILS
+══════════════════════════════════════ */
+function saveApiKey(){
+  const v=(document.getElementById('api-key-input')?.value||'').trim()
+  if(!v){showToast('请输入有效的 API Key');return}
+  localStorage.setItem('claude_api_key',v)
+  showToast('✅ API Key 已保存')
+}
+;(function(){
+  const k=localStorage.getItem('claude_api_key')
+  if(k){const el=document.getElementById('api-key-input');if(el)el.value=k}
+})()
+function esc(s){return String(s).replace(/&/g,'&').replace(/</g,'<').replace(/>/g,'>').replace(/"/g,'"')}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400)}
+</script>
+</body>
+</html>
